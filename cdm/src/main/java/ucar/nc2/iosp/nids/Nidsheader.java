@@ -1729,10 +1729,20 @@ class Nidsheader{
         addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC"
                     ,hoff, hedsiz, isZ, 0);
         //add RAW, BRIT variables for all radial variable
-        if(pcode == 182 || pcode == 99 || pcode == 180) {
-            levels = getTDWRLevels(nlevel, threshold);
-            iscale = 10;
-        } else if (pcode == 186 || pcode == 94) {
+        if(pcode == 182 || pcode == 99 || pcode == 180 || pcode == 154) {
+          levels = getTDWRLevels(nlevel, threshold);
+          iscale = 10;
+        } else if (pcode == 155) {
+          // ICD v19 3-34
+          // "For product 155, data levels 129 through 152
+          // denote data values starting from the minimum data value in even data increments."
+          // Let's compute the correct offset based on the fact that the levels start at 129
+          // and not 0. We need 129 to correspond to what was in threshold 0 when the scale is applied
+          // First two levels are missing and range folded (set in getTDWRLevels), so we use 127, not 129.
+          threshold[0] += -127 * threshold[1];
+          levels = getTDWRLevels(nlevel, threshold);
+          iscale = 10;
+        } else if (pcode == 186 || pcode == 94 || pcode == 153) {
             threshold[0] = -320;
             threshold[1] = 5;
             threshold[2] = 254;
@@ -1750,7 +1760,8 @@ class Nidsheader{
         } else if (pcode ==159 || pcode ==161 || pcode == 163
                 || pcode == 170 || pcode == 172 || pcode == 173
                 || pcode == 174 || pcode == 175
-                || pcode == 165 || pcode == 177) {
+                || pcode == 165 || pcode == 177 || pcode == 167
+                || pcode == 168) {
 
             levels = getDualpolLevels(threshold);
             iscale = 100;
@@ -2327,10 +2338,11 @@ class Nidsheader{
             cmemo = "Base Specturm Width " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
 
             ctilt = pname_lookup(pcode, prod_elevation/10);
-            ctitle = "BREF: Base Spectrum Width";
+            ctitle = "Base Spectrum Width";
             cunit = "Knots";
             cname = "SpectrumWidth";
-            summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+          summary = ctilt + " is a radial image of base spectrum width at tilt " + (prod_elevation / 10 + 1)
+              + " and range 124 nm";
             if(pcode == 28 ){
                 t1 = t1 * 0.25;
                 t2 = t2 * 0.25;
@@ -2338,7 +2350,8 @@ class Nidsheader{
                 lat_max = latitude + t1;
                 lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
                 lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
-                summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
+              summary = ctilt + " is a radial image of base spectrum width at tilt " + (prod_elevation / 10 + 1)
+                  + " and range 32 nm";
             }
         }
         else if (prod_type == DigitalDifferentialReflectivity) {
@@ -2402,16 +2415,16 @@ class Nidsheader{
         else if (prod_type == HypridHydrometeorClassification ) {
             radial               = 1;
             prod_elevation  = pinfo.p3;
-            cmemo = "Hyprid Hydrometeor Classification " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+            cmemo = "Hybrid Hydrometeor Classification " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
 
             int pLevel = getProductLevel(prod_elevation);
             ctilt = pname_lookup(18, pLevel);
 
 
-            ctitle = "Dualpol: Hyprid Hydrometeor Classification";
+            ctitle = "Dualpol: Hybrid Hydrometeor Classification";
             cunit = " ";
             cname = "HypridHydrometeorClassification";
-            summary = ctilt + " is a radial image of dual pol Hyprid Hydrometeor Classification field and its range 162 nm";
+            summary = ctilt + " is a radial image of dual pol Hybrid Hydrometeor Classification field and its range 162 nm";
 
         }
         else if (prod_type == OneHourAccumulation ) {
@@ -3243,14 +3256,16 @@ class Nidsheader{
         p3 = (short)getInt(b2, 2);
         off += 40;
         if(pcode == 182 || pcode == 186 || pcode == 32
-                || pcode == 94 || pcode == 99 || pcode == 180) {
+                || pcode == 94 || pcode == 99 || pcode == 180
+                || pcode == 153 || pcode == 154 || pcode == 155) {
           for(int i = 0; i< 16; i++) {
             buf.get(b2, 0, 2);
             threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
           }
         } else if(pcode == 159 || pcode == 161 || pcode == 163
                 || pcode == 170 || pcode == 172 || pcode == 173
-                || pcode == 174 || pcode == 175 ) {
+                || pcode == 174 || pcode == 175  || pcode == 167
+                || pcode == 168) {
             // Scale hw 31 32
             buf.get(b4, 0, 4);
             byte[] b44 = {b4[3], b4[2], b4[1], b4[0]};
@@ -3711,49 +3726,39 @@ class Nidsheader{
     static int code_typelookup( int code )
     {
       int type;
-      final int[] types = {
-        Other, Other, Other, Other, Other,                          /*   0-  9 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /*  10- 19 */
-        Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect,
-        BaseReflect248, Base_Reflect, Velocity,                     /*  20- 29 */
-        Velocity, Velocity, Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM,
-        SPECTRUM, Other, DigitalHybridReflect, Other, Other,        /*  30- 39 */
-        Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other,
-        Other, Echo_Tops, Other, Other, Other,                      /*  40- 49 */
-        Other, Other, Other, VAD, Other,
-        Other, Other, Other, Other, Other,                          /*  50- 59 */
-        StrmRelMeanVel, StrmRelMeanVel, Vert_Liquid, Other, Other,
-        Other, Other, Other, Layer_Reflect_Avg,                     /*  60- 69 */
-        Layer_Reflect_Avg, Layer_Reflect_Max,
-        Layer_Reflect_Max, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /*  70- 79 */
-        Other, Other, Other, Precip_1, Precip_3,
-        Precip_Accum, Precip_Array, Other,                          /*  80- 89 */
-        Other, Other, Other, Other, Other, Other, Layer_Reflect_Avg,
-        Layer_Reflect_Max, Other, Other, Other,                     /*  90- 99 */
-        BaseReflectivityDR, Other, Other, Other, Other, BaseVelocityDV,
-        Other, Other, Other, Other, Other,                          /* 100-109 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 110-119 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 120-129 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, DigitalVert_Liquid,             /* 130-139 */
-        EnhancedEcho_Tops, Other, Other, DigitalStormTotalPrecip, Other,
-        Other, Other, Other, Other, Other,                          /* 140-149 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 150-159 */
-        Other, Other, Other, Other, DigitalDifferentialReflectivity,
-        Other, DigitalCorrelationCoefficient, Other, DigitalDifferentialPhase, Other,    /* 160-169 */
-        HydrometeorClassification, Other, Other, Other, OneHourAccumulation,
-        DigitalAccumulationArray, StormTotalAccumulation, DigitalStormTotalAccumulation,
-                                   Accumulation3Hour, Digital1HourDifferenceAccumulation,/* 170-179 */
-        DigitalTotalDifferenceAccumulation, DigitalInstantaneousPrecipitationRate,
-                                   HypridHydrometeorClassification, Other, Other,
-        Reflect1, Reflect1, Velocity1, Velocity1, Other,       /* 180-189 */
-        SPECTRUM1, Reflect1, Reflect1, Other, Other,
-      };
+      int[] types = {Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, // 0 - 9
+          Other, Other, Other, Other, Other, Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect, // 10 - 19
+          BaseReflect248, Base_Reflect, Velocity, Velocity, Velocity, // 20 - 24
+          Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM, // 25 - 29
+          SPECTRUM, Other, DigitalHybridReflect, Other, Other, // 30 - 34
+          Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other, // 35 - 39
+          Other, Echo_Tops, Other, Other, Other, // 40 - 44
+          Other, Other, Other, VAD, Other, Other, Other, Other, Other, Other, // 45- 54
+          StrmRelMeanVel, StrmRelMeanVel, Vert_Liquid, Other, Other, // 55 - 59
+          Other, Other, Other, Layer_Reflect_Avg, Layer_Reflect_Avg, // 60 - 64
+          Layer_Reflect_Max, Layer_Reflect_Max, Other, Other, Other, // 65 - 69
+          Other, Other, Other, Other, Other, // 70 - 74
+          Other, Other, Other, Precip_1, Precip_3, // 75 - 79
+          Precip_Accum, Precip_Array, Other, Other, Other, // 80 - 84
+          Other, Other, Other, Other, Layer_Reflect_Avg, // 85 - 89
+          Layer_Reflect_Max, Other, Other, Other, BaseReflectivityDR, // 90 - 94
+          Other, Other, Other, Other, BaseVelocityDV, // 95 - 99
+          Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, // 100 - 109
+          Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, // 110 - 119
+          Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, // 120 - 129
+          Other, Other, Other, Other, DigitalVert_Liquid, // 130 - 134
+          EnhancedEcho_Tops, Other, Other, DigitalStormTotalPrecip, Other, // 135 - 139
+          Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, // 140 - 149
+          Other, Other, Other, BaseReflectivityDR, BaseVelocityDV, // 150 - 154
+          SPECTRUM, Other, Other, Other, DigitalDifferentialReflectivity, // 155 - 159
+          Other, DigitalCorrelationCoefficient, Other, DigitalDifferentialPhase, Other, // 160 - 164
+          HydrometeorClassification, Other, DigitalCorrelationCoefficient, Other, // 165 - 168
+          OneHourAccumulation, DigitalAccumulationArray, // 169 - 170
+          StormTotalAccumulation, DigitalStormTotalAccumulation, Accumulation3Hour, // 171 - 173
+          Digital1HourDifferenceAccumulation, DigitalTotalDifferenceAccumulation, // 174 - 175
+          DigitalInstantaneousPrecipitationRate, HypridHydrometeorClassification, Other, Other, // 176 - 179
+          Reflect1, Reflect1, Velocity1, Velocity1, Other, // 180 - 184
+          SPECTRUM1, Reflect1, Reflect1, Other, Other}; // 185 - 189
 
       if ( code < 0 || code > 189 )
         type     = Other;
@@ -3905,6 +3910,7 @@ class Nidsheader{
           case 183:
             pname = "V";
             break;
+          case 155:
           case 185:
             pname = "SW";
             break;
@@ -3944,8 +3950,8 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
         0,    0,    0,    0,    1,    1,    0,    0,    1,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
-        0,    0,    0,    0,    0,    0,    0,    0,    0, 0.25,    /* 150-159 */
-        0, 0.25,    0, 0.25,    0, 0.25,    0,    0,    0,    2,    /* 160-169 */
+        0,    0,    0,    0.25, 0.25, 0.25, 0,    0,    0, 0.25,    /* 150-159 */
+        0, 0.25,    0, 0.25,    0, 0.25,    0,    0.25, 0.25, 2,    /* 160-169 */
      0.25,    2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,    0,    0,    /* 170-179 */
         150.0,  150.0, 150.0, 0,    0,    0, 300.0,   0,    0,    0,    /* 180-189 */
       };
@@ -3986,8 +3992,8 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
         0,    0,    0,    0,  256,  199,    0,    0,  256,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
-        0,    0,    0,    0,    0,    0,    0,    0,    0,  256,    /* 150-159 */
-        0,  256,    0,  256,    0,  256,    0,    0,    0,   16,    /* 160-169 */
+        0,    0,    0,  256,  256,  256,    0,    0,    0,  256,    /* 150-159 */
+        0,  256,    0,  256,    0,  256,    0,  256,  256,   16,    /* 160-169 */
       256,   16,  256,  256,    0,    0,    0,   16,    0,    0,    /* 170-179 */
         256,   16,  256,    0,    0,    0,  256,    0,    0,    0,    /* 180-189 */
       };
