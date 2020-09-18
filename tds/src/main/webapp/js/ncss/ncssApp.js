@@ -83,7 +83,7 @@ Ncss.initMapPreview = function () {
 
 Ncss.buildAccessUrl = function () {
     var req = $("form").serialize();
-    var serverUrl = document.URL.split("/thredds/")[0];
+    var serverUrl = document.URL.split(context)[0];
     var dataUrl = serverUrl + $("#datasetPath")[0].innerHTML;
     $("#urlBuilder").html(dataUrl + "?" + req);
 };
