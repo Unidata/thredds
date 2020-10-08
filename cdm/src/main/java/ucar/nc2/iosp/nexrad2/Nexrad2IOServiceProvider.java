@@ -288,7 +288,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add( gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    if(datatype == DIFF_PHASE){
+    if (firstRecord.getDataWordSize(datatype) == 16) {
         v.setDataType(DataType.SHORT);
     } else {
         v.setDataType(DataType.BYTE);

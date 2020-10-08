@@ -34,6 +34,8 @@
 
 package ucar.nc2.iosp.nexrad2;
 
+import java.util.ArrayList;
+import java.util.List;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
@@ -541,6 +543,10 @@ public class Level2Record {
   short phiHR_first_gate = 0;
   short rhoHR_first_gate = 0;
 
+  byte reflectHR_data_word_size, velocityHR_data_word_size, spectrumHR_data_word_size;
+  byte zdrHR_data_word_size, phiHR_data_word_size, rhoHR_data_word_size;
+
+  private static List<String> missingProductWarned = new ArrayList<>();
 
   public static Level2Record factory(RandomAccessFile din, int record, long message_offset31) throws IOException {
     long offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE + message_offset31;
@@ -639,6 +645,10 @@ public class Level2Record {
       int dbpp8 = 0;
       int dbpp9 = 0;
 
+      int missingPointerNumber = -999;
+      int missingPointerValue = -999;
+      String missingName = "";
+
       if (dbp4 > 0) {
         String tname = getDataBlockStringValue(din, (short) dbp4, 1, 3);
         if (tname.startsWith("REF")) {
@@ -660,7 +670,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp4;
         } else {
-          logger.warn("Missing radial product dbp4={} tname={}", dbp4, tname);
+          missingName = tname;
+          missingPointerNumber = 4;
+          missingPointerValue = dbp4;
         }
 
       }
@@ -686,7 +698,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp5;
         } else {
-          logger.warn("Missing radial product dbp5={} tname={}", dbp5, tname);
+          missingName = tname;
+          missingPointerNumber = 5;
+          missingPointerValue = dbp5;
         }
       }
       if (dbp6 > 0) {
@@ -711,7 +725,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp6;
         } else {
-          logger.warn("Missing radial product dbp6={} tname={}", dbp6, tname);
+          missingName = tname;
+          missingPointerNumber = 6;
+          missingPointerValue = dbp6;
         }
       }
 
@@ -737,7 +753,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp7;
         } else {
-          logger.warn("Missing radial product dbp7={} tname={}", dbp7, tname);
+          missingName = tname;
+          missingPointerNumber = 7;
+          missingPointerValue = dbp7;
         }
       }
 
@@ -763,7 +781,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp8;
         } else {
-          logger.warn("Missing radial product dbp8={} tname={}", dbp8, tname);
+          missingName = tname;
+          missingPointerNumber = 8;
+          missingPointerValue = dbp8;
         }
       }
 
@@ -789,10 +809,23 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp9;
         } else {
-          logger.warn("Missing radial product dbp9={} tname={}", dbp9, tname);
+          missingName = tname;
+          missingPointerNumber = 9;
+          missingPointerValue = dbp9;
         }
       }
-      //hasHighResREFData = (dbp4 > 0);
+
+      if (missingPointerNumber != -999) {
+        // warn once per type per pointer location
+        String missingKey = String.format("%s%d", missingName, missingPointerNumber);
+        if (!missingProductWarned.contains(missingKey)) {
+          String msg = String.format("Unknown radial product dbp%d=%d tname=%s "
+                  + "(this is the only message you will see about this.)", missingPointerNumber, missingPointerValue,
+              missingName);
+          logger.warn(msg);
+          missingProductWarned.add(missingKey);
+        }
+      }
 
       if (hasHighResREFData) {
         reflectHR_gate_count = getDataBlockValue(din, (short) dbpp4, 8);
@@ -800,6 +833,7 @@ public class Level2Record {
         reflectHR_gate_size = getDataBlockValue(din, (short) dbpp4, 12);
         ref_rf_threshold = getDataBlockValue(din, (short) dbpp4, 14);
         ref_snr_threshold = getDataBlockValue(din, (short) dbpp4, 16);
+        reflectHR_data_word_size = getDataBlockByte(din, (short) dbpp4, 19);
         reflectHR_scale = getDataBlockValue1(din, (short) dbpp4, 20);
         reflectHR_addoffset = getDataBlockValue1(din, (short) dbpp4, 24);
         reflectHR_offset = (short) (dbpp4 + 28);
@@ -812,6 +846,7 @@ public class Level2Record {
         velocityHR_gate_size = getDataBlockValue(din, (short) dbpp5, 12);
         vel_rf_threshold = getDataBlockValue(din, (short) dbpp5, 14);
         vel_snr_threshold = getDataBlockValue(din, (short) dbpp5, 16);
+        velocityHR_data_word_size = getDataBlockByte(din, (short) dbpp5, 19);
         velocityHR_scale = getDataBlockValue1(din, (short) dbpp5, 20);
         velocityHR_addoffset = getDataBlockValue1(din, (short) dbpp5, 24);
         velocityHR_offset = (short) (dbpp5 + 28);
@@ -824,6 +859,7 @@ public class Level2Record {
         spectrumHR_gate_size = getDataBlockValue(din, (short) dbpp6, 12);
         sw_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
         sw_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
+        spectrumHR_data_word_size = getDataBlockByte(din, (short) dbpp6, 19);
         spectrumHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
         spectrumHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
         spectrumHR_offset = (short) (dbpp6 + 28);
@@ -836,6 +872,7 @@ public class Level2Record {
         zdrHR_gate_size = getDataBlockValue(din, (short) dbpp7, 12);
         zdrHR_rf_threshold = getDataBlockValue(din, (short) dbpp7, 14);
         zdrHR_snr_threshold = getDataBlockValue(din, (short) dbpp7, 16);
+        zdrHR_data_word_size = getDataBlockByte(din, (short) dbpp7, 19);
         zdrHR_scale = getDataBlockValue1(din, (short) dbpp7, 20);
         zdrHR_addoffset = getDataBlockValue1(din, (short) dbpp7, 24);
         zdrHR_offset = (short) (dbpp7 + 28);
@@ -847,6 +884,7 @@ public class Level2Record {
         phiHR_gate_size = getDataBlockValue(din, (short) dbpp8, 12);
         phiHR_rf_threshold = getDataBlockValue(din, (short) dbpp8, 14);
         phiHR_snr_threshold = getDataBlockValue(din, (short) dbpp8, 16);
+        phiHR_data_word_size = getDataBlockByte(din, (short) dbpp8, 19);
         phiHR_scale = getDataBlockValue1(din, (short) dbpp8, 20);
         phiHR_addoffset = getDataBlockValue1(din, (short) dbpp8, 24);
         phiHR_offset = (short) (dbpp8 + 28);
@@ -858,6 +896,7 @@ public class Level2Record {
         rhoHR_gate_size = getDataBlockValue(din, (short) dbpp9, 12);
         rhoHR_rf_threshold = getDataBlockValue(din, (short) dbpp9, 14);
         rhoHR_snr_threshold = getDataBlockValue(din, (short) dbpp9, 16);
+        rhoHR_data_word_size = getDataBlockByte(din, (short) dbpp9, 19);
         rhoHR_scale = getDataBlockValue1(din, (short) dbpp9, 20);
         rhoHR_addoffset = getDataBlockValue1(din, (short) dbpp9, 24);
         rhoHR_offset = (short) (dbpp9 + 28);
@@ -1101,6 +1140,24 @@ public class Level2Record {
     return Short.MIN_VALUE;
   }
 
+  byte getDataWordSize(int datatype) {
+    switch (datatype) {
+      case REFLECTIVITY_HIGH:
+        return reflectHR_data_word_size;
+      case VELOCITY_HIGH:
+        return velocityHR_data_word_size;
+      case SPECTRUM_WIDTH_HIGH:
+        return spectrumHR_data_word_size;
+      case DIFF_REFLECTIVITY_HIGH:
+        return zdrHR_data_word_size;
+      case DIFF_PHASE:
+        return phiHR_data_word_size;
+      case CORRELATION_COEFFICIENT:
+        return rhoHR_data_word_size;
+    }
+    return 8;
+  }
+
   private short getDataBlockValue(RandomAccessFile raf, short offset, int skip) throws IOException {
     long off = offset + message_offset + MESSAGE_HEADER_SIZE;
     raf.seek(off);
@@ -1120,6 +1177,13 @@ public class Level2Record {
     raf.seek(off);
     raf.skipBytes(skip);
     return raf.readFloat();
+  }
+
+  private byte getDataBlockByte(RandomAccessFile raf, short offset, int skip) throws IOException {
+    long off = offset + message_offset + MESSAGE_HEADER_SIZE;
+    raf.seek(off);
+    raf.skipBytes(skip);
+    return raf.readByte();
   }
 
   public java.util.Date getDate() {
@@ -1146,7 +1210,9 @@ public class Level2Record {
     }
 
     int dataCount = getGateCount(datatype);
-    if (datatype == DIFF_PHASE) {
+    byte wordSize = getDataWordSize(datatype);
+
+    if (wordSize == 16) {
       short[] data = new short[dataCount];
       raf.readShort(data, 0, dataCount);
 
@@ -1156,7 +1222,7 @@ public class Level2Record {
         else
           ii.setShortNext(data[i]);
       }
-    } else {
+    } else if (wordSize == 8) {
       byte[] data = new byte[dataCount];
       raf.readFully(data);
       //short [] ds = convertunsignedByte2Short(data);
@@ -1166,7 +1232,10 @@ public class Level2Record {
         else
           ii.setByteNext(data[i]);
       }
-
+    } else {
+      String message = String.format("Data word size of %d bits not understood for data type %d (%s).", wordSize,
+          datatype, getDatatypeName(datatype));
+      throw new IOException(message);
     }
   }
 
