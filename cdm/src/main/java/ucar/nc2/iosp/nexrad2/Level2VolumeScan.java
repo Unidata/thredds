@@ -144,9 +144,10 @@ public class Level2VolumeScan {
         station = NexradStationDB.get(stationId);
     }
 
-    //see if we have to uncompress
-     if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003)
-            || dataFormat.equals(AR2V0004) || dataFormat.equals(AR2V0006)  || dataFormat.equals(AR2V0007) ) {
+    // see if we have to uncompress--basically looking for anything but the original Level2 format
+    // technically speaking, this BZ2 compression is a detail of transmission--there's no requirement in the
+    // ICDs that this BZ2 block compression is actually applied on disk.
+    if (dataFormat.startsWith("AR2V")) {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
