@@ -89,7 +89,7 @@ libraries["depcheck"] = "org.owasp:dependency-check-gradle:6.0.2"
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.20.RELEASE"
+versions["spring"] = "4.3.29.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
