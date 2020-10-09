@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dt.radial;
 
+import static ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider.isNEXRAD2Format;
+
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
@@ -67,11 +69,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
-      if (format != null && (format.equals("ARCHIVE2")
-              || format.equals("AR2V0001") || format.equals("CINRAD-SA")
-              || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
-              || format.equals("AR2V0006") || format.equals("AR2V0007")))
+      if (format != null && (isNEXRAD2Format(format) || format.equals("CINRAD-SA"))) {
         return true;
+      }
     }
     return false;
   }
