@@ -1,0 +1,14 @@
+apply plugin: 'org.owasp.dependencycheck'
+
+dependencyCheck {
+  analyzers {
+    assemblyEnabled = false
+  }
+  data {
+    directory="$rootDir/project-files/owasp-dependency-check/nvd"
+  }
+  scanConfigurations = ['compileClasspath', 'runtimeClasspath']
+  suppressionFile = "$rootDir/project-files/owasp-dependency-check/dependency-check-suppression.xml"
+  // fail the build if any vulnerable dependencies are identified (any CVSS score > 0).
+  failBuildOnCVSS = 0
+}

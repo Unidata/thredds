@@ -61,6 +61,7 @@ buildscript {
         classpath libraries["gretty"]
         classpath libraries["shadow"]
         classpath libraries["coveralls-gradle-plugin"]
+        classpath libraries["depcheck"]
     
         classpath libraries["guava"]  // For various utility methods used in the build scripts.
     }
@@ -76,3 +77,4 @@ apply from: "$rootDir/gradle/archiving.gradle"
 // Order dependency: publishing.gradle creates publications for artifacts created in fatJars.gradle.
 apply from: "$rootDir/gradle/fatJars.gradle"
 apply from: "$rootDir/gradle/publishing.gradle"
+apply from: "$rootDir/gradle/dependency-check.gradle"
