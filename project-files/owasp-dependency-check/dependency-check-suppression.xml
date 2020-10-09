@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes><![CDATA[
+    file name
+    reason: false positive - this is for the github project TooTallNate/Java-WebSocket, not javax.websocket.
+            see https://github.com/TooTallNate/Java-WebSocket/issues/1019#issuecomment-628507934
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
+    <cpe>cpe:/a:java-websocket_project:java-websocket</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: tds-4.6.14-SNAPSHOT.war: ncwms-1.2.tds.4.6.12.jar
+    reason: ncwms does not use trac libs. false positive.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/uk\.ac\.rdg\.resc/ncwms@.*$</packageUrl>
+    <cpe>cpe:/a:trac:trac</cpe>
+  </suppress>
+</suppressions>

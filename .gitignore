@@ -54,8 +54,6 @@ ehthumbs.db
 # DO NOT DELETE THEM. They are actually carraige returns ('\r'), and are part of the pattern.
 # See https://github.com/github/gitignore/pull/183
 Icon
-
-
 Thumbs.db
 *.swp
 *.*~
@@ -67,3 +65,7 @@ thredds.tgz
 
 # ignore shade plugin generated dependency-reduced-pom for ncIdv
 ncIdv/dependency-reduced-pom.xml
+
+# ignore OWAPS dependency checker database
+project-files/owasp-dependency-check/nvd/
+
