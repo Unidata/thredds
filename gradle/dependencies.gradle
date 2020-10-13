@@ -149,7 +149,7 @@ libraries["log4j-slf4j-impl"] = "org.apache.logging.log4j:log4j-slf4j-impl:${ver
 
 ////////////////////////////////////////// Testing //////////////////////////////////////////
 
-libraries["junit"] = "junit:junit:4.12"
+libraries["junit"] = "junit:junit:4.13.1"
 
 libraries["spring-test"] = "org.springframework:spring-test:${versions["spring"]}"
 
