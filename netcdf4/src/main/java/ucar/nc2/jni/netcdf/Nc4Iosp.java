@@ -33,6 +33,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -2391,19 +2392,40 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private void createVariable(Group4 g4, Variable v) throws IOException {
+    boolean isVlen = false;
     int[] dimids = new int[v.getRank()];
     int count = 0;
     for (Dimension d : v.getDimensions()) {
-      int dimid;
-      if (!d.isShared()) {
-        dimid = addDimension(g4.grpid, v.getShortName() + "_Dim" + count, d.getLength());
+      if (d.isVariableLength()) {
+        if (isVlen || (count < v.getRank() - 1))
+          throw new IOException("Only the last dimension can be a Vlen " + isVlen + " " + count);
+        isVlen = true;
       } else {
-        dimid = findDimensionId(g4, d);
+        int dimid;
+        if (!d.isShared()) {
+          dimid = addDimension(g4.grpid, v.getShortName() + "_Dim" + count, d.getLength());
+        } else {
+          dimid = findDimensionId(g4, d);
+        }
+        if (debugDim)
+          System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getShortName(), dimid, v.getShortName());
+        dimids[count++] = dimid;
       }
-      if (debugDim)
-        System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getShortName(), dimid, v.getShortName());
-      dimids[count++] = dimid;
     }
+
+    if (isVlen) {
+      int[] dimids2 = new int[count];
+      for (int i = 0; i < count; i++) {
+        dimids2[i] = dimids[i];
+      }
+
+      createVlen(g4, v, dimids2);
+    } else {
+      createVariable(g4, v, dimids);
+    }
+  }
+
+  void createVariable(Group4 g4, Variable v, int[] dimids) throws IOException {
 
     int typid;
     Vinfo vinfo;
@@ -2473,6 +2495,81 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   }
 
+  void createVlen(Group4 g4, Variable v, int[] dimids) throws IOException {
+    int typid;
+    int ret;
+    Vinfo vinfo;
+    if (v instanceof Structure) { // g4 and typid was stored in vinfo in createCompoundType
+      vinfo = (Vinfo) v.getSPobject();
+      typid = vinfo.typeid;
+
+    } else {
+      typid = convertDataType(v.getDataType(), v.isUnsigned());
+      if (typid < 0)
+        return; // not implemented yet
+      vinfo = new Vinfo(g4, -1, typid);
+    }
+    if (debugWrite)
+      System.out.printf("adding variable length definiton %s (typeid %d) %n", v.getShortName(), typid);
+
+    // Create Vlen Type
+    IntByReference typidp = new IntByReference();
+    ret = nc4.nc_def_vlen(g4.grpid, v.getShortName() + "_type", new SizeT(typid), typidp);
+    if (ret != 0)
+      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
+    int vtypid = typidp.getValue();
+
+    // Add variable of vlen type vtypid
+    if (debugWrite)
+      System.out.printf("adding variable length variable %s (typeid %d) %n", v.getShortName(), vtypid);
+    IntByReference varidp = new IntByReference();
+    ret = nc4.nc_def_var(g4.grpid, v.getShortName(), new SizeT(vtypid), dimids.length, dimids, varidp);
+    if (ret != 0)
+      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
+    int varid = varidp.getValue();
+    vinfo.varid = varid;
+    if (debugWrite)
+      System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.g4.grpid, vinfo.varid,
+          vinfo.typeid);
+
+    if (version.isNetdf4format() && v.getRank() > 0) {
+      boolean isChunked = chunker.isChunked(v);
+      int storage = isChunked ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
+      SizeT[] chunking;
+      if (isChunked) {
+        long[] lchunks = chunker.computeChunking(v);
+        chunking = new SizeT[lchunks.length];
+        for (int i = 0; i < lchunks.length; i++)
+          chunking[i] = new SizeT(lchunks[i]);
+      } else
+        chunking = new SizeT[v.getRank()];
+
+      ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
+      if (ret != 0) {
+        throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
+      }
+
+      if (isChunked) {
+        int deflateLevel = chunker.getDeflateLevel(v);
+        int deflate = deflateLevel > 0 ? 1 : 0;
+        int shuffle = chunker.isShuffle(v) ? 1 : 0;
+        if (deflateLevel > 0) {
+          ret = nc4.nc_def_var_deflate(g4.grpid, varid, shuffle, deflate, deflateLevel);
+          if (ret != 0)
+            throw new IOException(nc4.nc_strerror(ret));
+        }
+      }
+    }
+
+    v.setSPobject(vinfo);
+
+    if (v instanceof Structure) {
+      createCompoundMemberAtts(g4.grpid, varid, (Structure) v);
+    }
+
+    for (Attribute att : v.getAttributes())
+      writeAttribute(g4.grpid, varid, att, v);
+  }
 
     /////////////////////////////////////
     // Enum types
@@ -2801,12 +2898,227 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       log.error("vinfo null for " + v2);
       throw new IllegalStateException("vinfo null for " + v2.getFullName());
     }
-    // int vlen = (int) v2.getSize();
-    // int len = (int) section.computeSize();
-    //  if (vlen == len) // entire array
-    //    writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
-    //  else
-    writeData(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
+
+    if (v2.isVariableLength()) {
+      writeVlen(v2, vinfo.g4.grpid, vinfo.varid, section, values);
+    } else {
+      writeData(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
+    }
+  }
+
+  private void writeVlen(Variable v, int grpid, int varid, Section section, Array values)
+      throws IOException, InvalidRangeException {
+    int[] origin = section.getOrigin();
+    int[] shape = section.getShape();
+    int[] stride = section.getStride();
+    int sectionLen = (int) section.computeSize();
+    int nb_row = (int) values.getSize();
+
+    assert sectionLen == nb_row;
+
+    Array arr;
+    int len;
+    Class<?> type = byte.class; // default, it is defined in the loop when i==0
+    int data_size = 1;// default, it is defined in the loop when i==0
+
+    // Loop to read the solid dimensions of the variable
+    int[] dims = new int[v.getRank() - 1];
+    for (int i = 0; i < v.getRank() - 1; i++) {
+      dims[i] = v.getDimension(i).getLength();
+    }
+
+    // Loop to read values and create an array of Vlen_t that contains the values
+    Nc4prototypes.Vlen_t[] vlen_value = new Nc4prototypes.Vlen_t[nb_row];
+    for (int i = 0; i < nb_row; i++) {
+      arr = (Array) values.getObject(i);
+      if (i == 0) {
+        type = arr.getDataType().getClassType();
+        data_size = arr.getDataType().getSize();
+      }
+      len = (int) (arr).getSize();
+      vlen_value[i] = new Nc4prototypes.Vlen_t();
+      vlen_value[i].p = new Memory(len * data_size);
+      for (int j = 0; j < len; j++) {
+        vlen_value[i].p = setValue(vlen_value[i].p, j * data_size, arr.getObject(j), type);
+      }
+      vlen_value[i].len = len;
+    }
+
+    // Write the data according to the dimension
+    // The writing is done element per element, this is not efficient but it allows to get ride of the following JNA
+    // error
+    // "Structure array elements must use contiguous memory (bad backing address at Structure array index 1)"
+    switch (v.getRank()) {
+      case 2:
+        writeVlen_D2(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      case 3:
+        writeVlen_D3(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      case 4:
+        writeVlen_D4(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      case 5:
+        writeVlen_D5(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      case 6:
+        writeVlen_D6(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      case 7:
+        writeVlen_D7(grpid, varid, vlen_value, origin, shape, stride);
+        break;
+      default:
+        System.out.println("Variable dimension is only one ore above 7 dimension: " + v.getRank());
+    }
+  }
+
+  private void writeVlen_D2(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      int ret = nc4.nc_put_vara(grpid, varid, new SizeT[] {new SizeT(i)}, new SizeT[] {new SizeT(1)},
+          new Vlen_t[] {vlen_value[i]});
+      if (ret != 0)
+        throw new IOException(i + " " + ret + ": " + nc4.nc_strerror(ret));
+    }
+  }
+
+  private void writeVlen_D3(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    int n, ret;
+    int d1 = (shape[1] - origin[1]) / stride[1];
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      for (int j = origin[1]; j < shape[1]; j += stride[1]) {
+        n = j + i * d1;
+        ret = nc4.nc_put_vara(grpid, varid, new SizeT[] {new SizeT(i), new SizeT(j)},
+            new SizeT[] {new SizeT(1), new SizeT(1)}, new Vlen_t[] {vlen_value[n]});
+        if (ret != 0)
+          throw new IOException(i + " " + j + " " + n + " " + ret + ": " + nc4.nc_strerror(ret));
+      }
+    }
+  }
+  
+  private void writeVlen_D4(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    int n, ret;
+    int d1 = (shape[1] - origin[1]) / stride[1];
+    int d2 = (shape[2] - origin[2]) / stride[2];
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      for (int j = origin[1]; j < shape[1]; j += stride[1]) {
+        for (int k = origin[2]; k < shape[2]; k += stride[2]) {
+          n = k + d2 * (j + d1 * i);
+          ret = nc4.nc_put_vara(grpid, varid, new SizeT[] {new SizeT(i), new SizeT(j), new SizeT(k)},
+              new SizeT[] {new SizeT(1), new SizeT(1), new SizeT(1)}, new Vlen_t[] {vlen_value[n]});
+          if (ret != 0)
+            throw new IOException(i + " " + j + " " + k + " " + n + " " + ret + ": " + nc4.nc_strerror(ret));
+        }
+      }
+    }
+  }
+
+  private void writeVlen_D5(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    int n, ret;
+    int d1 = (shape[1] - origin[1]) / stride[1];
+    int d2 = (shape[2] - origin[2]) / stride[2];
+    int d3 = (shape[3] - origin[3]) / stride[3];
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      for (int j = origin[1]; j < shape[1]; j += stride[1]) {
+        for (int k = origin[2]; k < shape[2]; k += stride[2]) {
+          for (int l = origin[3]; l < shape[3]; l += stride[3]) {
+            n = l + d3 * (k + d2 * (j + d1 * i));
+            ret = nc4.nc_put_vara(grpid, varid, new SizeT[] {new SizeT(i), new SizeT(j), new SizeT(k), new SizeT(l)},
+                new SizeT[] {new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1)}, new Vlen_t[] {vlen_value[n]});
+            if (ret != 0)
+              throw new IOException(
+                  i + " " + j + " " + k + " " + l + " " + n + " " + ret + ": " + nc4.nc_strerror(ret));
+          }
+        }
+      }
+    }
+  }
+
+  private void writeVlen_D6(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    int n, ret;
+    int d1 = (shape[1] - origin[1]) / stride[1];
+    int d2 = (shape[2] - origin[2]) / stride[2];
+    int d3 = (shape[3] - origin[3]) / stride[3];
+    int d4 = (shape[4] - origin[4]) / stride[4];
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      for (int j = origin[1]; j < shape[1]; j += stride[1]) {
+        for (int k = origin[2]; k < shape[2]; k += stride[2]) {
+          for (int l = origin[3]; l < shape[3]; l += stride[3]) {
+            for (int m = origin[4]; m < shape[4]; m += stride[4]) {
+              n = m + d4 * (l + d3 * (k + d2 * (j + d1 * i)));
+              ret = nc4.nc_put_vara(grpid, varid,
+                  new SizeT[] {new SizeT(i), new SizeT(j), new SizeT(k), new SizeT(l), new SizeT(m)},
+                  new SizeT[] {new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1)},
+                  new Vlen_t[] {vlen_value[n]});
+              if (ret != 0)
+                throw new IOException(
+                    i + " " + j + " " + k + " " + l + " " + n + " " + m + " " + ret + ": " + nc4.nc_strerror(ret));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void writeVlen_D7(int grpid, int varid, Vlen_t[] vlen_value, int[] origin, int[] shape, int[] stride)
+      throws IOException {
+    int n, ret;
+    int d1 = (shape[1] - origin[1]) / stride[1];
+    int d2 = (shape[2] - origin[2]) / stride[2];
+    int d3 = (shape[3] - origin[3]) / stride[3];
+    int d4 = (shape[4] - origin[4]) / stride[4];
+    int d5 = (shape[5] - origin[5]) / stride[5];
+    for (int i = origin[0]; i < shape[0]; i += stride[0]) {
+      for (int j = origin[1]; j < shape[1]; j += stride[1]) {
+        for (int k = origin[2]; k < shape[2]; k += stride[2]) {
+          for (int l = origin[3]; l < shape[3]; l += stride[3]) {
+            for (int m = origin[4]; m < shape[4]; m += stride[4]) {
+              for (int o = origin[5]; o < shape[5]; o += stride[5]) {
+                n = o + d5 * (m + d4 * (l + d3 * (k + d2 * (j + d1 * i))));
+                ret = nc4.nc_put_vara(grpid, varid,
+                    new SizeT[] {new SizeT(i), new SizeT(j), new SizeT(k), new SizeT(l), new SizeT(m), new SizeT(o)},
+                    new SizeT[] {new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1), new SizeT(1)},
+                    new Vlen_t[] {vlen_value[n]});
+                if (ret != 0)
+                  throw new IOException(i + " " + j + " " + k + " " + l + " " + n + " " + m + " " + o + " " + ret + ": "
+                      + nc4.nc_strerror(ret));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  Pointer setValue(Pointer p, long offset, Object value, Class<?> type) {
+    // Set the value at the offset according to its type
+    if (type == boolean.class || type == Boolean.class) {
+      p.setInt(offset, Boolean.TRUE.equals(value) ? -1 : 0);
+    } else if (type == byte.class || type == Byte.class) {
+      p.setByte(offset, value == null ? 0 : (Byte) value);
+    } else if (type == short.class || type == Short.class) {
+      p.setShort(offset, value == null ? 0 : ((Short) value).shortValue());
+    } else if (type == char.class || type == Character.class) {
+      p.setChar(offset, value == null ? 0 : ((Character) value).charValue());
+    } else if (type == int.class || type == Integer.class) {
+      p.setInt(offset, value == null ? 0 : ((Integer) value).intValue());
+    } else if (type == long.class || type == Long.class) {
+      p.setLong(offset, value == null ? 0 : ((Long) value).longValue());
+    } else if (type == float.class || type == Float.class) {
+      p.setFloat(offset, value == null ? 0f : ((Float) value).floatValue());
+    } else if (type == double.class || type == Double.class) {
+      p.setDouble(offset, value == null ? 0.0 : ((Double) value).doubleValue());
+    } else if (type == Pointer.class) {
+      p.setPointer(offset, (Pointer) value);
+    } else if (type == String.class) {
+      p.setPointer(offset, (Pointer) value);
+    }
+
+    return p;
   }
 
   private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array values) throws IOException, InvalidRangeException {

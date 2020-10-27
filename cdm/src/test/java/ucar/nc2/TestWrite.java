@@ -36,7 +36,8 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 import ucar.ma2.*;
-
+import ucar.unidata.util.test.TestDir;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -1040,4 +1041,31 @@ public class TestWrite {
       ucar.unidata.util.test.CompareNetcdf.compareData(result1, result2);
     }
   }
+
+  /** Test the cloning of files with vlen in order to demonstrate vlen variable writting. */
+  @Test
+  public void testNC4CloningVlen() {
+
+    // GIVEN
+    final String filename = tempFolder.getRoot().getAbsolutePath() + "/test-vlen.nc";
+
+    // -- A nc with VLEN
+    final NetcdfFile ncfile = TestDir
+        .openFileLocal("vlen-test/SGB1-HKT-00-SRC_C_EUMT_20181109084333_G_O_20170103000340_20170103000359_O_N____.nc");
+
+    // WHEN
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, filename)) {
+      TestUtils.cloneMetadata(ncfile, writer);
+      writer.create();
+      TestUtils.cloneData(ncfile, writer);
+
+    } catch (IOException | InvalidRangeException e) {
+      Assert.fail(e.getMessage());
+    }
+
+    // THEN
+    File f = new File(filename);
+    Assert.assertTrue(f.exists());
+  }
+
 }
