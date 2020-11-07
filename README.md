@@ -1,5 +1,4 @@
 ![THREDDS icon](https://www.unidata.ucar.edu/img/v3/logos/thredds-75x75.png)
-[![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
 
 # Unidata's THREDDS Project
 
