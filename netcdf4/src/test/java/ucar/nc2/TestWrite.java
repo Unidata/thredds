@@ -30,81 +30,61 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2;
 
-import java.io.*;
-
-import ucar.ma2.Array;
+import java.io.File;
+import java.io.IOException;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runners.MethodSorters;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.constants.CDM;
+import ucar.unidata.util.test.TestDir;
 
 /**
- * Static utililities for testing
- *
- * @author Russ Rew
+ * Test nc2 write JUnit framework.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class TestWrite {
+  @ClassRule
+  public static TemporaryFolder tempFolder = new TemporaryFolder();
 
-public class TestUtils  {
+  private boolean show = false;
+  private static String writerLocation;
 
+  @BeforeClass
+  public static void setupClass() throws IOException {
+    writerLocation = tempFolder.newFile("testWrite2.nc").getAbsolutePath();
+  }
 
-  static public void NCdump( String filename) {
-    try {
-      PrintWriter pw = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
-      NCdumpW.print(filename, pw, false, true, false, false, null, null);
-      NCdumpW.printNcML(filename, pw);
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      assert (false);
+  /** Test the cloning of files with vlen in order to demonstrate vlen variable writting. */
+  @Test
+  public void testNC4CloningVlen() {
+
+    // GIVEN
+    final String filename = tempFolder.getRoot().getAbsolutePath() + "/test-vlen.nc";
+
+    // -- A nc with VLEN
+    final NetcdfFile ncfile = TestDir
+        .openFileLocal("vlen-test/SGB1-HKT-00-SRC_C_EUMT_20181109084333_G_O_20170103000340_20170103000359_O_N____.nc");
+
+    // WHEN
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, filename)) {
+      TestUtils.cloneMetadata(ncfile, writer);
+      writer.create();
+      TestUtils.cloneData(ncfile, writer);
+
+    } catch (IOException | InvalidRangeException e) {
+      Assert.fail(e.getMessage());
     }
 
-    System.out.println( "**** NCdump done");
+    // THEN
+    File f = new File(filename);
+    Assert.assertTrue(f.exists());
   }
 
-  /** read all data, make sure variable metadata matches the array */
-  static public void testReadData( NetcdfFile ncfile, boolean showStatus) {
-    try {
-      for (Variable v  : ncfile.getVariables()) {
-        testVarMatchesData(v, showStatus);
-      }
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      assert (false);
-    }
-
-    if (showStatus) System.out.println( "**** testReadData done on "+ncfile.getLocation());
-  }
-
-  static public void testVarMatchesData( Variable v, boolean showStatus) throws IOException {
-    Array data = v.read();
-    assert data.getSize() == v.getSize();
-    assert data.getElementType() == v.getDataType().getPrimitiveClassType();
-
-    assert data.getRank() == v.getRank();
-    int[] dataShape = data.getShape();
-    int[] varShape = v.getShape();
-    for (int i=0; i<data.getRank(); i++)
-      assert dataShape[i] == varShape[i];
-
-    if (showStatus) System.out.println( "**** testReadData done on "+v.getFullName());
-  }
-
-  static public boolean close( double d1, double d2) {
-    if (Double.isNaN(d1))
-      return Double.isNaN(d2);
-
-    if (d1 != 0.0)
-      return Math.abs((d1-d2)/d1) < 1.0e-9;
-    else
-      return Math.abs(d1-d2) < 1.0e-9;
-  }
-
-  static public boolean close( float d1, float d2) {
-    if (Float.isNaN(d1))
-      return Float.isNaN(d2);
-
-    if (d1 != 0.0)
-      return Math.abs((d1-d2)/d1) < 1.0e-5;
-    else
-      return Math.abs(d1-d2) < 1.0e-5;
-  }
 }

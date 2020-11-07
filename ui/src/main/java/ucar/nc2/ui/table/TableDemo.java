@@ -17,7 +17,7 @@ public abstract class TableDemo {
     private final static int numCols = 5;
 
     public static void main(String[] args) {
-        System.out.println("Testing Travis!");
+        System.out.println("Testing GitHub Actions!");
 
         try {
             // Switch to Nimbus Look and Feel, if it's available.

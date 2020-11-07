@@ -245,14 +245,12 @@ Once this is setup, you can make the pull request.
 [[gh-now-what]]
 == Now what?
 
-The Unidata THREDDS project is setup such that automated testing for all pull requests is done via TravisCI.
+The Unidata THREDDS project is setup such that automated testing for all pull requests is done via Github Actions.
 The status of the tests can be seen on the pull request page.
-For example, see link:https://github.com/Unidata/thredds/pull/231[Unidata/thredds#231] by selecting the `View Details` button.
-This pull request was tested on link:https://travis-ci.org/Unidata/thredds/builds/84433104[TravisCI] and passed on all versions of Java supported by the current master branch.
 We have setup the THREDDS repository such that changes that do not pass these tests cannot be merged.
 
-One of the Unidata THREDDS team members will work with you to make sure your work is ready for merging once the tests have passed on TravisCI.
-Note that as changes to your pull request may be required, you can simply push those changes to your personal GitHub repository and the pull request will automatically be updated and new TravisCI tests will be initiated.
+One of the Unidata THREDDS team members will work with you to make sure your work is ready for merging once the tests have passed on Github Actions.
+Note that as changes to your pull request may be required, you can simply push those changes to your personal GitHub repository and the pull request will automatically be updated and new Github Action tests will be initiated.
 
 If your pull request addresses a bug, we kindly ask that you include a test in your pull request.
 If you do not know how to write tests in Java, we will be more than happy to work with you!

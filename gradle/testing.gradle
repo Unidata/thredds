@@ -17,7 +17,7 @@ ext {
     isTravis = System.env[travisEnvVar] as boolean        // We only care if prop is defined, not its actual value.
 
     if (isTravis) {
-        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
+        logger.warn "Skipping all NotTravis tests: detected that we're running in the GitHub Actions environment."
     }
 
 
