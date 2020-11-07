@@ -270,6 +270,7 @@ public interface Nc4prototypes extends Library {
   int nc_inq_dimlen(int ncid, int dimid, SizeTByReference lenp);
   int nc_def_var (int ncid, String name, SizeT xtype, int ndims, int[] dimids, IntByReference varidp);
 
+  int nc_def_vlen (int ncid, String name, SizeT xtype, IntByReference xtypep); //Vlen
   int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
   int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
   int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid, int ndims, int[] dim_sizes);
@@ -286,8 +287,10 @@ public interface Nc4prototypes extends Library {
 
   /* Write entire var of any type. */
   int nc_put_var(int ncid, int varid, byte[] bbuff);
+  int nc_put_var(int ncid, int varid, Vlen_t[] bbuff); //Vlen
 
   // write array section
+  int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, Vlen_t[] bbuff);
   int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] bbuff);
   int nc_put_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
   int nc_put_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip);
@@ -339,6 +342,7 @@ public interface Nc4prototypes extends Library {
   int nc_put_var_string(int ncid, int varid, String[] op);
 
   // write attributes
+  int nc_put_att (int ncid, int varid, String name, int xtype, SizeT len, Vlen_t[] value); //Vlen
   int nc_put_att (int ncid, int varid, String name, int xtype, SizeT len, byte[] value);
   int nc_put_att_string(int ncid, int varid, String attName, SizeT len, String[] value);
   int nc_put_att_text(int ncid, int varid, String attName, SizeT len, byte[] value);
