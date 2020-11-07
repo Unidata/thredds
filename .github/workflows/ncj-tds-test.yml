@@ -30,7 +30,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: netCDF-Java_JUnit_Results_${{ github.sha }}_Zulu-${{ matrix.java }}
+          name: netCDF-Java-TDS_JUnit_Results_${{ github.sha }}_Zulu-${{ matrix.java }}
           path: build/reports/allTests
 
   tests-adpotopen-hs:
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: netCDF-Java_JUnit_Results_${{ github.sha }}Adoptium-HS-${{ matrix.java }}
+          name: netCDF-Java-TDS_JUnit_Results_${{ github.sha }}Adoptium-HS-${{ matrix.java }}
           path: build/reports/allTests
 
   check-assemble-adpotopen-hs:
