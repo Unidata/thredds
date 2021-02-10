@@ -7,6 +7,7 @@
 54;    -1; -1; -1; -1;    ncep; canadian met
 #
 # FSL HRRR
+59;     0;  2;  1;  -1;   gsd; FSL HRRR;  resources/grib2/noaa_gsd/Fsl-hrrr4.csv
 59;    -1; -1; -1; 125;   gsd; fsl hrrr
 #
 # center 8, subcenter 0 and -9999 use ndfd table

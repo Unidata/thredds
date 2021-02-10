@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <title>NCEP Table Version 133</title>
-  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
   <parameter code="139">
     <shortName>POZT</shortName>
     <description>Ozone production from temperature term</description>

@@ -62,16 +62,18 @@ public class NdfdLocalTables extends LocalTables {
   }
 
   /*
-  take from degrib repository:http://slosh.nws.noaa.gov/pubview/degrib/src/degrib/metaname.c?root=degrib&view=markup
-  Apparently for center 8, subcenter 0 and subcenter 255 (!)
-  */
+   * Sourced from netcdf-java v5 (https://github.com/Unidata/netcdf-java/pull/601)
+   * Up-to-date with degrib Version 2.25 09/21/2020
+   */
   private void init() {
     add(0, 0, 193, "ApparentT", "Apparent Temperature", "K");
+    add(0, 0, 205, "WBGT", "Wet Bulb Globe Temperature", "K");
     add(0, 1, 192, "Wx", "Weather string", "");
+    add(0, 1, 193, "PPI", "Precipitation Potential Index", "%");
+    add(0, 1, 227, "IceAccum", "Ice Accumulation", "kg/m^2");
 
     /* LOOK ignored : grandfather'ed in a NDFD choice for POP. */
     add(0, 10, 8, "PoP12", "Prob of 0.01 In. of Precip", "%");
-
     add(0, 13, 194, "smokes", "Surface level smoke from fires", "log10(g/m^3)");
     add(0, 13, 195, "smokec", "Average vertical column smoke from fires", "log10(g/m^3)");
     add(0, 14, 192, "O3MR", "Ozone Mixing Ratio", "kg/kg");
@@ -92,6 +94,11 @@ public class NdfdLocalTables extends LocalTables {
     add(0, 19, 215, "TotalSvrProb", "Total Probability of Severe Thunderstorms", "%");
     add(0, 19, 216, "TotalXtrmProb", "Total Probability of Extreme Severe Thunderstorms", "%");
     add(0, 19, 217, "WWA", "Watch Warning Advisory", "");
+    add(0, 19, 235, "TCWind", "Tropical Cyclone Wind Threat", "0=none; 4=low; 6=moderate; 8=high; 10=extreme");
+    add(0, 19, 236, "TCSurge", "Tropical Cyclone Storm Surge Threat", "0=none; 4=low; 6=moderate; 8=high; 10=extreme");
+    add(0, 19, 238, "TCRain", "Tropical Cyclone Flooding Rain Threat", "0=none; 4=low; 6=moderate; 8=high; 10=extreme");
+    add(0, 19, 239, "TCTornado", "Tropical Cyclone Tornado Threat", "0=none; 4=low; 6=moderate; 8=high; 10=extreme");
+    add(0, 19, 246, "SNOWLVL", "Snow Level", "m");
 
     /* Leaving next two lines in for grandfathering sake. 9/19/2007... Probably can remove in future. */
     add(0, 19, 203, "TotalSvrProb", "Total Probability of Severe Thunderstorms", "%");
@@ -99,9 +106,17 @@ public class NdfdLocalTables extends LocalTables {
     add(0, 192, 192, "FireWx", "Critical Fire Weather", "%");
     add(0, 192, 194, "DryLightning", "Dry Lightning", "%");
 
+    /* Mike added 1/13 */
+    add(2, 1, 192, "CANL", "Cold Advisory for Newborn Livestock",
+        "0=none; 2=slight; 4=mild; 6=moderate; 8=severe; 10=extreme");
+
     /* Arthur Added this to both NDFD and NCEP local tables. (5/1/2006) */
     add(10, 3, 192, "Surge", "Hurricane Storm Surge", "m");
     add(10, 3, 193, "ETSurge", "Extra Tropical Storm Surge", "m");
+    add(10, 3, 250, "StormTide", "Storm Surge and Tide", "m");
+    add(10, 3, 251, "Tide", "Tide", "m");
+    /* Mike added 2/2012 */
+    add(0, 1, 198, "MinRH", "Minimum Relative Humidity", "%");
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
