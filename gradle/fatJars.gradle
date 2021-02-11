@@ -36,7 +36,9 @@ buildscript {
     apply from: "$rootDir/gradle/dependencies.gradle"
 
     repositories {
-        jcenter()
+        maven {
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
+        }
     }
     dependencies {
         classpath libraries["shadow"]

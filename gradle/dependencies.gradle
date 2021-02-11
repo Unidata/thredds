@@ -7,9 +7,6 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
-        // Prefer JCenter to Maven Central. See
-        // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
-        jcenter()
         mavenCentral()  // JCenter isn't quite a superset of Maven Central.
         
         // All of the repositories below could be replaced with:
@@ -22,10 +19,12 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             // For "threddsIso", "ncwms", "visad" and "jj2000".
             url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
         }
+
         maven {
             // For "bounce" and several dependencies needed by "ncwms".
             // Contains artifacts that are not available in any other Maven repository on the net.
             // We should be concerned that we're relying on any such artifacts. TODO: Remove our dependence on these.
+            // However, we do need this to get the gretty plugin now that bintray and jcenter are going away.
             url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
         }
     
@@ -43,18 +42,18 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             // with the source repo at all.
             url "https://artifacts.unidata.ucar.edu/repository/unidata-geotoolkit/"
         }
-    
+
         // Third-party repositories.
-        maven {
-            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
-        }
         maven {
             url "http://maven.asascience.com/maven/ncsos-releases/"  // For "ncsos".
         }
         maven {
             url "http://52north.org/maven/repo/releases/"  // For "52n-oxf-xmlbeans".
         }
-        
+        maven {
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
+        }
+
         // Hosted snapshot repository. We want this to be last so that we can minimize warnings such as:
         //   Failed to get resource: HEAD. [HTTP HTTP/1.1 400 Repository version policy:
         //   SNAPSHOT does not allow version: 1.4:

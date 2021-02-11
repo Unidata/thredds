@@ -31,7 +31,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
             targetCompatibility = JavaVersion.VERSION_1_7
             
             repositories {
-                jcenter()
+                mavenCentral()
             }
             dependencies {
                 compile 'org.slf4j:slf4j-api:1.7.7'
@@ -100,7 +100,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
             targetCompatibility = '1.7'
             
             repositories {
-                jcenter()
+                mavenCentral()
             }
             dependencies {
                 compile 'org.slf4j:slf4j-api:1.7.7'
