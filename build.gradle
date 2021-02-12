@@ -56,9 +56,6 @@ buildscript {
         maven {
             url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"  // For 'com.cwardgar.gretty-fork:gretty'.
         }
-        maven {
-            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
-        }
     }
     dependencies {
         classpath libraries["gretty"]
