@@ -37,7 +37,7 @@ buildscript {
 
     repositories {
         maven {
-            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
+            url "https://plugins.gradle.org/m2" // For shadow plugin
         }
     }
     dependencies {

@@ -50,9 +50,6 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         maven {
             url "http://52north.org/maven/repo/releases/"  // For "52n-oxf-xmlbeans".
         }
-        maven {
-            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
-        }
 
         // Hosted snapshot repository. We want this to be last so that we can minimize warnings such as:
         //   Failed to get resource: HEAD. [HTTP HTTP/1.1 400 Repository version policy:
