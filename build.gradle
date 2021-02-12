@@ -49,12 +49,15 @@ buildscript {
     apply from: "$rootDir/gradle/dependencies.gradle"
     
     repositories {
-        jcenter()
+        mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"  // For Gradle plugins.
         }
         maven {
-            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"  // For 'com.cwardgar.gretty-fork:gretty'.
+        }
+        maven {
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
         }
     }
     dependencies {

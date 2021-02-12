@@ -7,9 +7,6 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
-        // Prefer JCenter to Maven Central. See
-        // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
-        jcenter()
         mavenCentral()  // JCenter isn't quite a superset of Maven Central.
         
         // All of the repositories below could be replaced with:
@@ -22,10 +19,12 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             // For "threddsIso", "ncwms", "visad" and "jj2000".
             url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
         }
+
         maven {
             // For "bounce" and several dependencies needed by "ncwms".
             // Contains artifacts that are not available in any other Maven repository on the net.
             // We should be concerned that we're relying on any such artifacts. TODO: Remove our dependence on these.
+            // However, we do need this to get the gretty plugin now that bintray and jcenter are going away.
             url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
         }
     
@@ -43,18 +42,18 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             // with the source repo at all.
             url "https://artifacts.unidata.ucar.edu/repository/unidata-geotoolkit/"
         }
-    
+
         // Third-party repositories.
-        maven {
-            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
-        }
         maven {
             url "http://maven.asascience.com/maven/ncsos-releases/"  // For "ncsos".
         }
         maven {
             url "http://52north.org/maven/repo/releases/"  // For "52n-oxf-xmlbeans".
         }
-        
+        maven {
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-jcenter-proxy/" // For shadow plugin
+        }
+
         // Hosted snapshot repository. We want this to be last so that we can minimize warnings such as:
         //   Failed to get resource: HEAD. [HTTP HTTP/1.1 400 Repository version policy:
         //   SNAPSHOT does not allow version: 1.4:
@@ -111,11 +110,11 @@ libraries["spring-security-taglibs"] = "org.springframework.security:spring-secu
 
 ////////////////////////////////////////// XML Beans //////////////////////////////////////////
 
-libraries["xmlbeans"] = "org.apache.xmlbeans:xmlbeans:2.6.0"
+libraries["xmlbeans"] = "org.apache.xmlbeans:xmlbeans:3.1.0"
 
-libraries["52n-oxf-xmlbeans"] = "org.n52.sensorweb:52n-oxf-xmlbeans:2.0.0-alpha.3.3"
+libraries["52n-oxf-xmlbeans"] = "org.n52.sensorweb:52n-oxf-xmlbeans:2.0.0"
 
-versions["52n-common-xml"] = "2.1.0"
+versions["52n-common-xml"] = "2.7.0"
 
 libraries["52n-xml-waterML-v20"] = "org.n52.sensorweb:52n-xml-waterML-v20:${versions["52n-common-xml"]}"
 
@@ -181,11 +180,11 @@ libraries["bounce"] = "org.bounce:bounce:0.14"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.1"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.13"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.4"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.13"
 
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.1"
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.13"
 
 // Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
@@ -212,7 +211,7 @@ libraries["jcommander"] = "com.beust:jcommander:1.35"
 
 libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.3.2"
 
-libraries["guava"] = "com.google.guava:guava:27.0.1-jre"
+libraries["guava"] = "com.google.guava:guava:30.1-jre"
 
 libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
@@ -264,10 +263,11 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
     exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
 }
 
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.946"
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.10.0"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.10.5"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.10.5"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.10.5.1"
 
 libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
     // This is an external TDS plugin that depends on an old

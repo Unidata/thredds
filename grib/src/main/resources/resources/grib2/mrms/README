@@ -1,0 +1,4 @@
+MergedTableCode.txt generated from convert_mrms_table.py (in v5 of netCDF-Java)
+
+2021-02-02 sarms
+  - Updated to version 12.0 of the MRMS GRIB2 parameter table. Backported from v5 (https://github.com/Unidata/netcdf-java/pull/601/)

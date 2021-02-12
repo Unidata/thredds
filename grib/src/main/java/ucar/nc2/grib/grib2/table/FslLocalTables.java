@@ -88,6 +88,11 @@ public class FslLocalTables extends NcepLocalTables {
     return grib2Table.getPath();
   }
 
+  @Override
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+    return local.get(makeParamId(discipline, category, number));
+  }
+
   // must override since we are subclassing NcepLocalTables
   @Override
   public List<GribTables.Parameter> getParameters() {
@@ -179,8 +184,60 @@ public class FslLocalTables extends NcepLocalTables {
     initLocalTable(f);
   }
 
+  private static Grib2Parameter parseVersion4(String[] flds, Formatter f) {
+    // V4:
+    // Record, MasterTable, LocalTable, Discipline, Category, Parameter, WGrib2Name, NCLName,
+    // FieldType, VerticalLevels, Units,
+    String recordNumber = flds[0].trim();
+    int masterTableNumber = Integer.parseInt(flds[1].trim());
+    int localTableNumber = Integer.parseInt(flds[2].trim());
+    int disciplineNumber = Integer.parseInt(flds[3].trim());
+    int categoryNumber = Integer.parseInt(flds[4].trim());
+    int parameterNumber = Integer.parseInt(flds[5].trim());
+
+    String WGrib2Name = flds[6].trim();
+    String NCLName = flds[7].trim();
+    String FieldType = flds[8].trim(); // closest we have to a description in version 4 of the FSL table
+    String VerticalLevels = flds[9].trim();
+    String Units = flds[10].trim();
+    if (f != null) {
+      f.format("%3s %3d %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, masterTableNumber,
+          localTableNumber, disciplineNumber, categoryNumber, parameterNumber, WGrib2Name, NCLName, FieldType,
+          VerticalLevels, Units);
+    }
+
+    String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+    return new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, FieldType);
+  }
+
+  private static Grib2Parameter parsePre4(String[] flds, Formatter f) {
+    // v1, v2:
+    // RecordNumber, TableNumber, DisciplineNumber, CategoryNumber, ParameterNumber, WGrib2Name, NCLName,
+    // FieldType, Description, Units,
+    String recordNumber = flds[0].trim();
+    int tableNumber = Integer.parseInt(flds[1].trim());
+    int disciplineNumber = Integer.parseInt(flds[2].trim());
+    int categoryNumber = Integer.parseInt(flds[3].trim());
+    int parameterNumber = Integer.parseInt(flds[4].trim());
+
+    String WGrib2Name = flds[5].trim();
+    String NCLName = flds[6].trim();
+    String FieldType = flds[7].trim();
+    String Description = flds[8].trim();
+    String Units = flds[9].trim();
+    if (f != null) {
+      f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, tableNumber, disciplineNumber,
+          categoryNumber, parameterNumber, WGrib2Name, NCLName, FieldType, Description, Units);
+    }
+
+    String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+    return new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
+  }
+
   private Map<Integer, Grib2Parameter> readCsv(String resourcePath, Formatter f) {
     boolean header = true;
+    int version = resourcePath.endsWith("hrrr4.csv") ? 4 : -1;
+
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
     ClassLoader cl = getClass().getClassLoader();
@@ -200,38 +257,42 @@ public class FslLocalTables extends NcepLocalTables {
         if (line == null) break;
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] flds = line.split(",");
+        // starting with version 4, the HRRR parameter table includes multiple tables:
+        // HRRR 2-D Hourly
+        // HRRR 2-D Sub-hrly
+        // HRRR 3-D Native Level
+        // HRRR 3-D Isobaric Level
+        //
+        // To make updating simple, the tables are concatenated in a single file, which leads to
+        // the presence of multiple headers. This allows us to skip the internal headers of the csv "table".
+        // Also, some of the subtables include garbage, like the CONUS 3-D Native Level Fields table, which has
+        // things like:
+        // 1-14 repeats for remaining 49 native sigma levels...
+        // and this will allow us to skip those as well.
+        if ((version >= 4) && (flds.length != 11) || line.startsWith("Record")) {
+          continue;
+        }
 
-        /* System.out.printf("%d == ", flds.length);
-        for (String s : flds) System.out.printf("%s,", s.trim());
-        System.out.printf("%n"); */
+        Grib2Parameter s = version == 4 ? parseVersion4(flds, f) : parsePre4(flds, f);
 
-        // RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
-        //RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
+        result.put(makeParamId(s.getDiscipline(), s.getCategory(), s.getNumber()), s);
 
-        String recordNumber = flds[0].trim();
-        int tableNumber = Integer.parseInt(flds[1].trim());
-        int disciplineNumber = Integer.parseInt(flds[2].trim());
-        int categoryNumber = Integer.parseInt(flds[3].trim());
-        int parameterNumber = Integer.parseInt(flds[4].trim());
+        if (f != null) {
+          f.format(" %s%n", s);
+        }
 
-        String WGrib2Name = flds[5].trim();
-        String NCLName = flds[6].trim();
-        String FieldType = flds[7].trim();
-        String Description = flds[8].trim();
-        String Units = flds[9].trim();
-        if (f != null)
-          f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, tableNumber, disciplineNumber, categoryNumber, parameterNumber,
-                  WGrib2Name, NCLName, FieldType, Description, Units);
-
-        String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
-        Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
-        // s.desc = Description;
-        result.put(makeParamId(disciplineNumber, categoryNumber, parameterNumber), s);
-        if (f != null) f.format(" %s%n", s);
-        if (categoryNumber > 191 || parameterNumber > 191) {
+        if (s.getCategory() > 191 || s.getNumber() > 191) {
           Grib2Parameter dup = names.get(s.getName());
           if (dup != null && f != null) {
-            if (header) f.format("Problems in table %s %n", resourcePath);
+            if (header) {
+              if (version >= 4) {
+                // Duplicate entries are only potentially an issue in version 4 and above.
+                // Need to examine them to know for sure.
+                f.format("Potential problem in table %s %n", resourcePath);
+              } else {
+                f.format("Problems in table %s %n", resourcePath);
+              }
+            }
             header = false;
             f.format(" DUPLICATE NAME %s and %s (%s)%n", s.getId(), dup.getId(), s.getName());
           }

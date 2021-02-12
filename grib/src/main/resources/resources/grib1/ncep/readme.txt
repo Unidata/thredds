@@ -70,3 +70,8 @@
 02/11/2019 sarms
   - updated ncep grib1 tables using grib\src\test\java\ucar\nc2\grib\grib1\table\NcepHtmlScraper.java
     of 5.0 branch.
+
+02/02/2021 sarms
+  - updated ncep grib1 tables. Only real change was an addition to table a. Other changes were limited to
+    switching from http to https in the source attribute of the parameter tables. Changes backported from
+    v5 (https://github.com/Unidata/netcdf-java/pull/601/).

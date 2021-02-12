@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tableA>
   <title>NCEP GRIB-1 Table A</title>
-  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html</source>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html</source>
   <parameter code="2">
     <description>Ultra Violet Index Model</description>
   </parameter>
@@ -12,7 +12,7 @@
     <description>NCEP/ARL Smoke Model</description>
   </parameter>
   <parameter code="5">
-    <description>Satellite Derived Precipitation and temperatures, from IR (See PDS Octet 41... dfor specific satellite ID)</description>
+    <description>Satellite Derived Precipitation and temperatures, from IR (See PDS Octet 41 ... for specific satellite ID)</description>
   </parameter>
   <parameter code="6">
     <description>NCEP/ARL Dust Model</description>
@@ -187,6 +187,9 @@
   </parameter>
   <parameter code="100">
     <description>Miscellaneous Test ID</description>
+  </parameter>
+  <parameter code="101">
+    <description>Conventional Observation Re-Analysis (CORE)</description>
   </parameter>
   <parameter code="104">
     <description>National Blend GRIB</description>

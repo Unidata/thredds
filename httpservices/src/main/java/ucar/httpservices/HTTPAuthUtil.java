@@ -33,14 +33,12 @@
 
 package ucar.httpservices;
 
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Set;
 
 
@@ -48,7 +46,6 @@ import java.util.Set;
  * Provide Auth related utilities
  */
 
-@org.apache.http.annotation.Immutable
 abstract public class HTTPAuthUtil
 {
 

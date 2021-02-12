@@ -27,4 +27,16 @@
     <cve>CVE-2012-5882</cve>
     <cve>CVE-2012-5883</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name example: taglibs-standard-impl-1.2.5.jar
+      reason: These CVEs are for a GO based project called tag (MP3/MP4/OGG/FLAC metadata parsing library).
+              False positive. See https://github.com/dhowden/tag/issues/77 (from first CVE listed)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.taglibs/taglibs\-standard\-impl@.*$</packageUrl>
+    <cve>CVE-2020-29242</cve>
+    <cve>CVE-2020-29243</cve>
+    <cve>CVE-2020-29244</cve>
+    <cve>CVE-2020-29245</cve>
+  </suppress>
 </suppressions>
