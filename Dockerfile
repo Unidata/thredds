@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://bootstrap.pypa.io/get-pip.py \
+RUN wget -q https://bootstrap.pypa.io/3.5/get-pip.py \
     && python get-pip.py pip==18.1 \
     && rm -rf get-pip.py
 
