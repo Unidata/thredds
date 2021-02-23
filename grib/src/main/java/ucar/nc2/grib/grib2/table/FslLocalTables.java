@@ -73,7 +73,7 @@ public class FslLocalTables extends NcepLocalTables {
     if (grib2Table.getId().genProcessId == 125)
       return fimTable;
     else
-      return hrrrTable;
+      return grib2Table.getPath();
   }
 
   private FslLocalTables(Grib2Table grib2Table) {
@@ -172,8 +172,8 @@ public class FslLocalTables extends NcepLocalTables {
   }
 
   protected void initLocalTable(Formatter f) {
-    if (grib2Table.getPath().equals(hrrrTable))
-      local = readCsv(hrrrTable, f);
+    if (grib2Table.getPath().contains("hrrr"))
+      local = readCsv(grib2Table.getPath(), f);
     else
       local = readFim(fimTable, f);
   }
@@ -206,7 +206,7 @@ public class FslLocalTables extends NcepLocalTables {
           VerticalLevels, Units);
     }
 
-    String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+    String name = !NCLName.equals("var") ? NCLName : FieldType;
     return new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, FieldType);
   }
 
