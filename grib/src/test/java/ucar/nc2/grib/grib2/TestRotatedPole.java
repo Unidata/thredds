@@ -104,7 +104,7 @@ public class TestRotatedPole {
       Assert.assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue().doubleValue(),
           DELTA);
       // check data variable
-      Variable dataVar = nc.findVariable("TMP_surface");
+      Variable dataVar = nc.findVariable("TMP_P0_L100_GLC0_surface");
       Assert.assertNotNull(dataVar);
       Assert.assertEquals("RotatedLatLon32769_Projection", dataVar.findAttribute("grid_mapping").getStringValue());
       Assert.assertEquals("K", dataVar.findAttribute("units").getStringValue());
