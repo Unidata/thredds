@@ -74,8 +74,8 @@ public class GribTestCreationOptions {
 
     String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
     try (NetcdfDataset ds = NetcdfDataset.openDataset(dataset)) {
-      Variable v = ds.findVariable("DPT_height_above_ground");
-      Assert.assertNotNull("DPT_height_above_ground", v);
+      Variable v = ds.findVariable("DPT_P0_L103_GLC0_height_above_ground");
+      Assert.assertNotNull("DPT_P0_L103_GLC0_height_above_ground", v);
       Dimension d = v.getDimension(0);
       Assert.assertEquals(57, d.getLength());
     }
