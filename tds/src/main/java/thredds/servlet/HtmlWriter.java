@@ -62,6 +62,16 @@ import java.util.*;
 
 import static thredds.servlet.ServletUtil.setResponseContentLength;
 
+// For MarkDown rendering
+import java.io.BufferedReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import org.commonmark.node.*;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
  * <p/>
@@ -542,6 +552,84 @@ public class HtmlWriter {
   }
 
   /**
+   * Parse markdownSourcePath as markdown and render to output as html
+   *
+   * @param output Appendable append the output to
+   * @param markdownSourcePath file path to markdown source
+   * @return true if markdownSourcePath is to a parsable file
+   */
+  private boolean generateMarkdown(Path markdownSourcePath, Appendable output) {
+    BufferedReader reader;
+    try {
+      reader = Files.newBufferedReader(markdownSourcePath, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      return false;
+    } catch (java.lang.SecurityException e) {
+      return false;
+    }
+    Parser parser = Parser.builder().build();
+    Node node;
+    try {
+      node = parser.parseReader(reader);
+    } catch (IOException e) {
+      return false;
+    }
+    HtmlRenderer.builder().escapeHtml(true).build().render(node, output);
+    return true;
+  }
+
+
+  /**
+   * Try to find a markdown file for the catalog, render it to html and
+   * append to output.  For crawable datasets it will try to look for
+   * README.md in catalog directory.  If it is not found (or failed to
+   * render) then it will try to find README.md in partent directories, and
+   * stop if it is not found in the collection root directory.
+   *
+   * For static catalogs generated from xml files, it will try to render
+   * catalog.md if present.
+   *
+   * @cat search for markdown file that relates to this catalog
+   * @output append html to this stream
+   * @returns true if markdown was appended
+   */
+  private boolean appendMarkdown(InvCatalogImpl cat, Appendable output) {
+    Boolean hasAppended = false;
+    String catalogSourcePath = cat.getCreateFrom();
+    if (catalogSourcePath == null) {
+      return false;
+    }
+    if (catalogSourcePath.startsWith("file:")) {
+      catalogSourcePath = catalogSourcePath.substring(5);
+    }
+    if (catalogSourcePath.endsWith(".xml")) {
+      // replace suffix xml (length 3) with suffix md
+      int pos = catalogSourcePath.length() - 3;
+      Path p = FileSystems.getDefault().getPath(catalogSourcePath.substring(0, pos).concat("md"));
+      hasAppended = generateMarkdown(p, output);
+    } else if (Files.isDirectory(FileSystems.getDefault().getPath(catalogSourcePath))) {
+      Path dir = FileSystems.getDefault().getPath(catalogSourcePath);
+      hasAppended = true; // assume the following will succeed (we'll return false if we fail)
+      while(!generateMarkdown(dir.resolve("README.md"), output)) {
+        // Tried special file .  (same directory) and was not able to
+        // generate markdown (no file or invalid).  Do not traverese further:
+        // /path/collection/./catalogLevel where ./ denotes collection start
+        // catalog.
+        Path name = dir.getFileName();
+        if (name == null || ".".equals(name.toString())) {
+          return false;
+        }
+        dir = dir.getParent();
+        // Got to the root folder and still no success, so end the loop
+        if (dir == null) {
+          return false;
+        }
+      }
+    }
+    return hasAppended;
+  }
+
+  /**
    * Write a catalog in HTML, make it look like a file directory.
    *
    * @param cat catalog to write
@@ -565,7 +653,7 @@ public class HtmlWriter {
     sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
-    sb.append("<h1>");
+    sb.append("<h1 style=\"overflow:hidden;\">");
 
     // Logo
     //String logoUrl = this.htmlConfig.getInstallLogoUrl();
@@ -582,6 +670,16 @@ public class HtmlWriter {
     sb.append("Catalog ").append(catname);
     sb.append("</h1>");
     sb.append("<HR size='1' noshade='noshade'>");
+
+    // Try to render README.md in tds.content.path
+    if (generateMarkdown(FileSystems.getDefault().getPath(tdsContext.getContentDirectory().toString(), "README.md"), sb)) {
+      sb.append("<HR size='1' noshade='noshade'>");
+    }
+
+    // Try to render catalog.md or README.md from collection directory
+    if (appendMarkdown(cat, sb)) {
+      sb.append("<HR size='1' noshade='noshade'>");
+    }
 
     sb.append("<table width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
 

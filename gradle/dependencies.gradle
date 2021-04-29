@@ -274,6 +274,8 @@ libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
     exclude group: 'edu.ucar', module: 'tds'
 }
 
+libraries["commonmark"] = "com.atlassian.commonmark:commonmark:0.9.0"
+
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
 allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
