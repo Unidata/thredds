@@ -1,27 +1,42 @@
-<h3>Accessing TDS Monitoring and Debugging Tools</h3>
-<p>Other than the compelling security reasons, you will want to enable SSL to take advantage of a couple of monitoring and debugging tools: the
-  <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="../tdsMonitor.html">TdsMonitor Tool</a> -- both of which
-  (out-of-the-box) require SSL to access.</p>
-<ol>
+<html>
+
+<head>
+  <title>Accessing TDS Monitoring and Debugging Tools</title>
+  <link rel="stylesheet" href="tutorial2.css" type="text/css" />
+  <script type="text/javascript" src="workshopNav.js"></script>
+</head>
+
+<body>
+  <h3>Accessing TDS Monitoring and Debugging Tools</h3>
+  <p>Other than the compelling security reasons, you will want to enable SSL to take
+    advantage of a couple of monitoring and debugging tools: the
+    <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and
+    the <a href="../tdsMonitor.html">TdsMonitor Tool</a> -- both of which (out-of-the-box)
+    require SSL to access.
+  </p>
+  <ol>
 
 
-  <li>Enable SSL in Tomcat</li>
-  <p>If Tomcat has not already been configured to run via SSL, follow the tutorial in the previous section to <a href="enablingSSL.html">Enable SSL in
-    Tomcat</a>.</p>
+    <li>Enable SSL in Tomcat</li>
+    <p>If Tomcat has not already been configured to run via SSL, follow the tutorial in the
+      previous section to <a href="enablingSSL.html">Enable SSL in Tomcat</a>.</p>
 
 
-  <li>Modify <code>${tomcat_home}/conf/tomcat-users.xml</code> to add the new <code>tdsConfig</code> and <code>tdsMonitor</code> roles. Add these roles to your
-    list of roles:
-  </li>
-<pre>
-&lt;tomcat-users&gt;
-    &lt;role rolename="manager-gui"/&gt;
-    <strong>&lt;role rolename="tdsConfig"/&gt;
-      &lt;role rolename="tdsMonitor"/&gt;</strong>
-    &lt;user username="admin" 
-          password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" 
-          roles="manager-gui,<strong>tdsConfig, tdsMonitor</strong>"/&gt;
-&lt;/tomcat-users&gt;
-</pre>
-  <li>Restart Tomcat</li>
+    <li>Modify <code>/conf/tomcat-users.xml</code> to add the new
+      <code>tdsConfig</code> and <code>tdsMonitor</code> roles. Add these roles to your list
+      of roles:
+    </li>
+    <pre>
+  &lt;tomcat-users&gt; &lt;role rolename="manager-gui"/&gt;
+      <strong>&lt;role rolename="tdsConfig"/&gt; &lt;role
+      rolename="tdsMonitor"/&gt;</strong>
+      &lt;user username="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
+      roles="manager-gui,<strong>tdsConfig, tdsMonitor</strong>"/&gt; &lt;/tomcat-users&gt;
+  </pre>
+    <li>Restart Tomcat</li>
+  </ol>
+  <script src="https://docs.unidata.ucar.edu/js/tds46_add_in.js" type="text/javascript"></script>
 
+</body>
+
+</html>

@@ -371,10 +371,11 @@ So, when cataloged, this dataset would end up as something like this:<br>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include regExp=&quot;PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc&quot;/&gt;<br>    &lt;/filter&gt;<br>    &lt;addTimeCoverage<br>          datasetNameMatchPattern=&quot;PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$&quot;<br>          startTimeSubstitutionPattern=&quot;$1-$2-$3T$4:$5:00&quot; duration=&quot;1 hour&quot;/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
 <hr width="100%">
 <address>
-  <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
+  <img alt="THREDDS" src="../thredds-tds_64.png" >This document is maintained by Unidata and was
   last updated January, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 <p></p>
+<script src="https://docs.unidata.ucar.edu/js/tds46_add_in.js" type="text/javascript"></script>
 </body>
 </html>
