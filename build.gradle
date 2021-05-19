@@ -1,0 +1,8 @@
+plugins {
+  id 'base'
+}
+
+tasks.named('wrapper') {
+  distributionType = Wrapper.DistributionType.ALL
+  gradleVersion = '7.0.2'
+}
