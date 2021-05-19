@@ -22,7 +22,7 @@ A little information about each member of the THREDDS family can be found below.
 ## netCDF-Java and the THREDDS Data Server
 
 Prior to version `5.0`, the netCDF-Java and TDS codebase was combined and managed at this repository.
-The `v4.6.x` line of development is still combined, and continue to be found in this repository under the `main` [branch](https://github.com/Unidata/thredds/tree/main).
+The `v4.6.x` line of development is still combined, and continue to be found in this repository under the `4.6.x` [branch](https://github.com/Unidata/thredds/tree/4.6.x).
 
 Starting with `v5.0`, the netCDF-Java codebase, including the NcML and THREDDS Catalog specifications, can be found at:
 
