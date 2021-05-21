@@ -1,3 +1,15 @@
+pluginManagement {
+  plugins {
+    id 'edu.ucar.unidata.nexus' version '0.0.1'
+  }
+  repositories {
+    gradlePluginPortal()
+    maven {
+      url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+    }
+  }
+}
+
 rootProject.name = 'thredds-projects'
 
-//include 'docs'
+include 'docs'

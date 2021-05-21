@@ -1,0 +1,63 @@
+plugins {
+  id 'edu.ucar.unidata.nexus' apply false
+}
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+
+
+def docs = ['netcdf-java', 'tds', 'ncml']
+
+def updateAllFiles = tasks.register('updateAll') {
+  group 'publishing'
+}
+
+docs.forEach { name ->
+  def taskName = name.replace('-','').capitalize()
+  def updateVersionInfo = tasks.register("update${taskName}VersionInfoFile", PublishToRawRepoTask) {
+    description "Publish version-info.json to Nexus directly under ${name}/ of the docs-${name} repository."
+    group 'publishing'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    repoName = "docs-${name}"
+    publishSrc = file("${projectDir}/${name}/top_level_repo_files/")
+    destPath = "${name}/"
+  }
+
+  def updateCommon = tasks.register("update${taskName}CommonFiles", PublishToRawRepoTask) {
+    description "Publish common files to Nexus directly under ${name}/ of the docs-${name} repository."
+    group 'publishing'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    repoName = "docs-${name}"
+    publishSrc = file("${projectDir}/common/")
+    destPath = "${name}/"
+  }
+
+  updateAllFiles.configure {
+    dependsOn updateCommon, updateVersionInfo
+  }
+}
+
+String getPropertyOrFailBuild(String key) {
+  if (!hasProperty(key)) {
+    throw new GradleException("You must define the '$key' property.")
+  } else {
+    property(key) as String
+  }
+}
+
+gradle.projectsEvaluated {
+  for (taskType in [PublishToRawRepoTask, DeleteFromNexusTask]) {
+    tasks.withType(taskType).all {
+      if (taskType == DeleteFromNexusTask && project.hasProperty('dryRun')) {
+        dryRun = project.property('dryRun')
+      }
+      onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild 'nexus.username'
+        password = getPropertyOrFailBuild 'nexus.password'
+        return true
+      }
+    }
+  }
+}
