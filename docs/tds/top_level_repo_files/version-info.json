@@ -1,0 +1,18 @@
+{
+  "package" : "tds",
+  "packageName" : "THREDDS Data Server",
+  "releases" : [
+    {
+      "version": "5.0.0",
+      "include": "1",
+      "releaseDate": "",
+      "status": "beta",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    }
+  ]
+}

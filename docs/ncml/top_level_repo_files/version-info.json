@@ -1,0 +1,18 @@
+{
+  "package" : "ncml",
+  "packageName" : "NetCDF Markup Language",
+  "releases" : [
+    {
+      "version": "2.2",
+      "include": "1",
+      "releaseDate": "",
+      "status": "current",
+      "docsets": {
+        "": {
+          "baseUrl": "https://docs.unidata.ucar.edu/thredds/ncml/current/index.html",
+          "docsetName": "NetCDF Markup Language"
+        }
+      }
+    }
+  ]
+}
