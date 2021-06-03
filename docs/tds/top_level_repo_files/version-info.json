@@ -8,6 +8,18 @@
       "releaseDate": "",
       "status": "beta",
       "docsets": {
+        "adminguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/tds/5.0/adminguide/index.html",
+          "docsetName": "TDS Administrator's Guide"
+        },
+        "devguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/tds/5.0/devguide/index.html",
+          "docsetName": "TDS Developer's Guide"
+        },
+        "quickstart": {
+          "baseUrl": "https://docs.unidata.ucar.edu/tds/5.0/quickstart/index.html",
+          "docsetName": "TDS Quick Start Guide"
+        },
         "userguide": {
           "baseUrl": "https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html",
           "docsetName": "User's Guide"
