@@ -14,7 +14,7 @@
 <p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (Grid Definition Section, which defines the horizontal coordinate system) can be fixed with <strong>gdsHash</strong>. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. One can also control how  GRIB records are collected into Variables with <strong>pdsHash</strong>, how time intervals are handled with <strong>intvFilter</strong>, and a few other options described below.</p>
 <p>If you make changes to any <strong>gribConfig</strong> parameters that affect stage one processing, you need to delete the CDM index files (<strong>*.ncx3</strong>) to force them to be recreated. You do not need to delete the <strong>gbx9</strong> index files.</p>
 <p>The second stage happens when the GribCollection is turned into a NetcdfFile by the GRIB IOSP. At this point, the correct GRIB tables must be identified, and decisions on how to name Groups and Variables are made. Changes to these settings may happen at any time, without having to recreate the collection indices. They will take affect the next time the TDS starts.</p>
-<p>These instructions are tailored for TDS users. To work with Grib Collections in client software using the CDM stack, see <a href="/software/netcdf-java/v4.6/reference/formats/GribFiles.html">CDM Grib Files</a>.</p>
+<p>These instructions are tailored for TDS users. To work with Grib Collections in client software using the CDM stack, see <a href="/netcdf-java/4.6/userguide/reference/formats/GribFiles.html">CDM Grib Files</a>.</p>
 <h2>Stage One: GribCollection Creation</h2>
 <h3><strong><a name="gdsHash" id="gdsHash"></a>gdsHash</strong>: Fix errors in GDS encoding</h3>
 <blockquote>
@@ -126,7 +126,7 @@
     <li>GRIB-1 uses ids of center-subcenter-version-param, eg &quot;7-4-2-132&quot;.</li>
     <li>GRIB-2 uses ids of discipline-category-number, eg &quot;0-1-8&quot;.</li>
   </ol>
-  <p>Also see <a href="/software/netcdf-java/v4.6/reference/formats/GribFiles.html#intvFilter">CDM docs</a>.</p>
+  <p>Also see <a href="/netcdf-java/4.6/userguide/reference/formats/GribFiles.html#intvFilter">CDM docs</a>.</p>
 </blockquote>
 <h3><a name="parameter" id="parameter"></a>option: set miscellaneous values</h3>
 <blockquote>

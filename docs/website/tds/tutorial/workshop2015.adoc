@@ -25,7 +25,7 @@ Form] (Repeated submissions encouraged)
  * link:GettingStarted.html#tour[Tomcat Directory Structure: Quick Tour]
  * link:GettingStarted.html#logs[Tomcat Log Files]
  * link:GettingStarted.html#manager[Tomcat `manager` Application]
- * link:https://www.unidata.ucar.edu/software/tds/v4.6/tutorial/BasicThreddsConfig_xml.html[Exercise]:
+ * link:/tds/4.6/adminguide/tutorial/BasicThreddsConfig_xml.html[Exercise]:
        edit threddsConfig.xml to add local information
 
 === 10:15 - 10:30 Break
@@ -126,7 +126,7 @@ to explore/discuss during this time. Potential topics include:
 ** DataType now has unsigned types: UBYTE, USHORT, UINT, ULONG
 ** Server catalog processing much more efficient
 ** New TDS remote access service (CdmrFeature) to give python client full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
-** https://www.unidata.ucar.edu/software/thredds/v5.0/tds/UpgradingTo5.html[Details]
+** /tds/5.0/adminguide/upgrading.html[Details]
 
 * Alpha release next week
 
@@ -156,7 +156,7 @@ to explore/discuss during this time. Potential topics include:
  ** Other:
  *** Some random table on some random dev's hard drive combined with (likely) wgrib(2)
  ** General GRIB file readers:
- *** link:https://www.unidata.ucar.edu/software/netcdf-java/v4.6/documentation.htm[netCDF-Java] (and thus the TDS)
+ *** link:https://www.unidata.ucar.edu/netcdf-java/4.6/userguide/documentation.htm[netCDF-Java] (and thus the TDS)
  * Using ToolsUI with GRIB
  ** Viewer
  ** IOSP
