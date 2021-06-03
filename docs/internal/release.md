@@ -1,4 +1,4 @@
-## Making a release for CDM/TDS using Gradle
+## Making a release for CDM/TDS 4.6.x using Gradle
 
 `releaseMinor` refers to the full, 3-part version, e.g. `4.6.6`
 
@@ -127,65 +127,48 @@
     - Test the new Web Start. If there were no errors, delete the old stuff.
       * `rm -r webstartOld`
 
-19. Release Javadoc to `www:/content/software/netcdf-java/v${releaseMajor}/javadoc` and `javadocAll`
-    - Rename old directories
-      * `cd /content/software/netcdf-java/v${releaseMajor}/`
-      * `mv javadoc javadocOld`
-      * `mv javadocAll javadocAllOld`
-    - Perform release
-      * `./gradlew :cdm:clean :cdm:releaseDocs`
-      * `./gradlew :ui:clean :ui:releaseDocs`
-    - If there were no errors and the new Javadoc looks good, delete the old stuff.
-      * `rm -r javadocOld`
-      * `rm -r javadocAllOld`
+19. Release documentation and javadocs to nexus
+    - remove old 4.6 docs
+      * `./gradlew -PdryRun=false :docs:website:deleteAllDocs`
+    - upload new 4.6 docs
+      * `./gradlew :docs:website:deleteAllDocs`
 
-20. Change permissions of the files you just copied.
-    ```bash
-    cd /content/software/netcdf-java/v${releaseMajor}/
-    find webstart -type d -exec chmod 775 {} \;
-    find webstart -type f -exec chmod 664 {} \;
-    find javadoc -type d -exec chmod 775 {} \;
-    find javadoc -type f -exec chmod 664 {} \;
-    find javadocAll -type d -exec chmod 775 {} \;
-    find javadocAll -type f -exec chmod 664 {} \;
-    ```
-
-21. Update Unidata download page(s)
+20. Update Unidata download page(s)
     - check https://www.unidata.ucar.edu/downloads/tds/
       * modify `www:/content/downloads/tds/toc.xml` as needed
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
-22. Edit `www:/content/software/tds/latest.xml` to reflect the correct
+21. Edit `www:/content/software/tds/latest.xml` to reflect the correct
     releaseMinor version for stable and development. This file is read by all
     TDS > v4.6 to make log entries regarding current stable and development versions
     to give users a heads-up of the need to update.
 
-23. Commit the changes you've made.
+22. Commit the changes you've made.
     - At the very least, `project.version` in the root build script should have been modified.
     - `git add ...`
     - `git commit -m "Release ${releaseMinor}"`
 
-24. Prepare for next round of development.
+23. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
       * For example, `if ${releaseMinor} == "4.6.6"`, the next version will be "4.6.7-SNAPSHOT".
     - Commit the change.
       * `git add ...`
       * `git commit -m "Begin work on 4.6.7-SNAPSHOT"`
 
-25. Push the commits upstream.
+24. Push the commits upstream.
     - `git push --set-upstream <your-repo> ${releaseMinor}`
 
-26. Create a pull request on GitHub and wait for it to be merged.
+25. Create a pull request on GitHub and wait for it to be merged.
     - It should pull your changes on `<your-repo>/${releaseMinor}` into `Unidata/master`.
     - Alternatively, merge it yourself. As long as the changeset is small and non-controversial, nobody will care.
 
-27. Once merged, pull down the latest changes from master. You can also delete the release branch.
+26. Once merged, pull down the latest changes from master. You can also delete the release branch.
     - `git checkout master`
     - `git pull`
     - `git branch -d ${releaseMinor}`
 
-28. In the git log, find the "Release ${releaseMinor}" commit and tag it with the version number.
+27. In the git log, find the "Release ${releaseMinor}" commit and tag it with the version number.
     - `git log`
     - `git tag v${releaseMinor} <commit-id>`
         * `HEAD~1` is usually the right commit, so you can probably do `git tag v${releaseMinor} HEAD~1`
@@ -193,20 +176,20 @@
       commits, creating brand new commits in the process. We want to apply the tag to the new commit,
       because it will actually be part of `master`'s history.
 
-29. Push the release tag upstream.
+28. Push the release tag upstream.
     -  `git push origin v${releaseMinor}`
 
-30. Create a release on GitHub using the tag you just pushed.
+29. Create a release on GitHub using the tag you just pushed.
     - Example: https://github.com/Unidata/thredds/releases/tag/v4.6.7
     - To help create the changelog, examine the pull requests on GitHub. For example, this URL shows all PRs that
       have been merged into `master` since 2016-02-12:
       https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
 
-31. Make blog post for the release.
+30. Make blog post for the release.
     - Example: s.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
     - Best to leave it relatively short and just link to the GitHub release.
 
-32. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
+31. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
     - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
     - Best to leave it relatively short and just link to the GitHub release.
 

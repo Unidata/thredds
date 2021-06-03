@@ -83,6 +83,8 @@ libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-
 
 libraries["depcheck"] = "org.owasp:dependency-check-gradle:6.0.2"
 
+libraries["unidata-nexus"] = "edu.ucar.unidata:unidata-nexus-gradle:0.0.1"
+
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.3.29.RELEASE"

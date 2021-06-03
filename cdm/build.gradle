@@ -49,18 +49,4 @@ javadoc {
     }
 }
 
-// TODO: Use the Sync task for this.
-task releaseDocs(dependsOn: javadoc, group: 'Release') << {
-    String releaseDir = new File(webdir, "javadoc").absolutePath
-
-    ant.delete(dir: releaseDir)
-    ant.mkdir(dir: releaseDir)
-
-    copy {
-        println "copyDocs to " + releaseDir
-        from("build/docs/javadoc")
-        into releaseDir
-    }
-}
-
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'

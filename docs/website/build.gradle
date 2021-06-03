@@ -1,0 +1,106 @@
+apply plugin: 'edu.ucar.unidata.nexus'
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+
+tasks.create('publishNcjVersionedUserGuide', PublishToRawRepoTask) {
+  description = 'Publish netCDF-java user guide (versioned) to Nexus under /major.minor/.'
+  repoName = 'docs-netcdf-java'
+  publishSrc = "${projectDir}/netcdf-java/"
+  destPath = 'netcdf-java/4.6/userguide/'
+}
+
+tasks.create('publishNcjVersionedJavadoc', PublishToRawRepoTask) {
+  description = 'Publish netCDF-java javadoc (versioned) to Nexus under /major.minor/.'
+  repoName = 'docs-netcdf-java'
+  publishSrc = "${rootDir}/cdm/build/docs/javadoc/"
+  destPath = 'netcdf-java/4.6/javadoc/'
+  dependsOn ':cdm:javadoc'
+}
+
+tasks.create('publishNcjVersionedJavadocAll', PublishToRawRepoTask) {
+  description = 'Publish netCDF-java javadoc (versioned) to Nexus under /major.minor/.'
+  repoName = 'docs-netcdf-java'
+  publishSrc = "${rootDir}/ui/build/docs/javadoc/"
+  destPath = 'netcdf-java/4.6/javadocAll/'
+  dependsOn ':ui:javadoc'
+}
+
+tasks.create('publishTdsVersionedDocs', PublishToRawRepoTask) {
+  description = 'Publish TDS docs (versioned) to Nexus under /major.minor/.'
+  repoName = 'docs-tds'
+  publishSrc = "${projectDir}/tds/"
+  destPath = 'tds/4.6/adminguide/'
+}
+
+tasks.create('publishTdsCurrentDocs', PublishToRawRepoTask) {
+  description = 'Publish TDS docs to Nexus under /current/.'
+  repoName = 'docs-tds'
+  publishSrc = "${projectDir}/tds/"
+  destPath = 'tds/current/adminguide/'
+}
+
+// By default, this will perform a dry run, which simply prints the components that the query matched.
+// To actually delete those components, do:  ./gradlew -PdryRun=false :docs:deleteFromNexus
+tasks.create('deleteNcjVersionedDocsFromNexus', DeleteFromNexusTask) {
+  description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
+  searchQueryParameters.repository = 'docs-netcdf-java'
+  searchQueryParameters.group = "/netcdf-java/4.6/userguide*"
+}
+
+tasks.create('deleteNcjVersionedJavaDocsFromNexus', DeleteFromNexusTask) {
+  description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
+  searchQueryParameters.repository = 'docs-netcdf-java'
+  searchQueryParameters.group = "/netcdf-java/4.6/javadoc*"
+}
+
+tasks.create('deleteTdsVersionedDocsFromNexus', DeleteFromNexusTask) {
+  description = 'Remove TDS docs on Nexus under /major.minor/.'
+  searchQueryParameters.repository = 'docs-tds'
+  searchQueryParameters.group = "/tds/4.6/*"
+}
+
+tasks.create('deleteTdsCurrentDocsFromNexus', DeleteFromNexusTask) {
+  description = 'Remove TDS docs on Nexus under /current/.'
+  searchQueryParameters.repository = 'docs-tds'
+  searchQueryParameters.group = "/tds/current/*"
+}
+
+tasks.create('publishAllDocs') {
+  group = 'Documentation'
+  dependsOn publishNcjVersionedJavadoc, publishNcjVersionedJavadocAll, publishNcjVersionedUserGuide
+  dependsOn publishTdsVersionedDocs, publishTdsCurrentDocs
+}
+
+tasks.create('deleteAllDocs') {
+  group = 'Documentation'
+  dependsOn deleteNcjVersionedDocsFromNexus, deleteNcjVersionedJavaDocsFromNexus
+  dependsOn deleteTdsVersionedDocsFromNexus, deleteTdsCurrentDocsFromNexus
+}
+
+String getPropertyOrFailBuild(String key) {
+  if (!rootProject.hasProperty(key)) {
+    throw new GradleException("You must define the '$key' property in order to publish to Nexus.")
+  } else {
+    rootProject.property(key) as String
+  }
+}
+
+[PublishToRawRepoTask, DeleteFromNexusTask].forEach { taskType ->
+  tasks.withType(taskType).all {  // Common PublishToRawRepoTask config.
+    group = 'Documentation'
+    host = 'https://artifacts.unidata.ucar.edu/'
+
+    if (taskType == DeleteFromNexusTask && project.hasProperty('dryRun')) {
+      dryRun = project.property('dryRun')
+    }
+
+    onlyIf {
+      // Will be evaluated at task execution time, not during configuration.
+      // Fails the build if the specified properties haven't been provided.
+      username = getPropertyOrFailBuild 'nexus.username'
+      password = getPropertyOrFailBuild 'nexus.password'
+      return true
+    }
+  }
+}
