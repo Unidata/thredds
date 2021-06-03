@@ -3,7 +3,7 @@
     <information>
         <title>NetCDF ToolsUI</title>
         <vendor>Unidata</vendor>
-        <homepage href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"/>
+        <homepage href="https://www.unidata.ucar.edu/software/netcdf-java/"/>
         <description kind="short">Graphical interface to netCDF-Java / Common Data Model</description>
         <icon href="nc.gif"/>
         <offline-allowed/>

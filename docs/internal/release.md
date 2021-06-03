@@ -9,7 +9,7 @@
    - The instructions for the two are very similar.
 
 2. Ensure that there are no uncommitted changes.
-   - `git checkout master`
+   - `git checkout 4.6.x`
    - `git status`
 
 3. Pull all of the latest changes from upstream.
@@ -71,7 +71,6 @@
     chmod 664 *
     ```
 
-
 13. Copy over ncIdv, netcdfAll, toolsUI and their security hashes from Nexus
     ```bash
     cd /web/ftp/pub/netcdf-java/v${releaseMajor}
@@ -101,102 +100,86 @@
     chmod 664 *
     ```
 
-16. Mount the `www.unidata.ucar.edu:/web/` Samba share to a local directory, if it's not mounted already.
-    Let's call that directory `webMountDir`. The details of this will vary based on your OS.
-    - On OS X do: Finder->Go->Connect to Server...  Then connect to `smb://www/web`.
-
-17. Set the `webdir` and `ftpdir` Gradle properties
-    - Open `~/.gradle/gradle.properties`
-    - Set `webdir` to `${webMountDir}/content/software/netcdf-java/v${releaseMajor}`
-    - Set `ftpdir` to `${webMountDir}/ftp/pub/netcdf-java/v${releaseMajor}`
-    - The value of `webMountDir` will likely differ, but mine is `/Volumes/web`.
-    - So for example, on OS X, my (Christian's) Gradle properties for `webdir` and `ftpdir` are:
-      ```properties
-      webdir=/Volumes/web/content/software/netcdf-java/v4.6
-      ftpdir=/Volumes/web/ftp/pub/netcdf-java/v4.6
-      ```
-
-18. Release Web Start to `www:/content/software/netcdf-java/v${releaseMajor}/webstart`
+16. Release Web Start to `downloads.unidata.ucar.edu/netcdf-java/4.6/webstart`
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
-      `keystore`, `keystoreAlias`, `keystorePassword`, `webdir`, and `ftpdir` properties defined.
-    - Rename old directories
-      * `cd /content/software/netcdf-java/v${releaseMajor}/`
-      * `mv webstart webstartOld`
-    - Perform release
-      * `./gradlew :ui:clean :ui:releaseWebstart`
-    - Test the new Web Start. If there were no errors, delete the old stuff.
-      * `rm -r webstartOld`
+      `keystore`, `keystoreAlias`, and `keystorePassword` properties defined.
+    - Remove old webstart files
+      * `./gradlew -PdryRun=false :ui:deleteWebstart`
+    - Publish new webstart files
+      * `./gradlew clean :ui:publishWebstart`
 
-19. Release documentation and javadocs to nexus
+17. Release documentation and javadocs to nexus
     - remove old 4.6 docs
       * `./gradlew -PdryRun=false :docs:website:deleteAllDocs`
     - upload new 4.6 docs
-      * `./gradlew :docs:website:deleteAllDocs`
+      * `./gradlew :docs:website:publishAllDocs`
 
-20. Update Unidata download page(s)
+18. Update Unidata download page(s)
     - check https://www.unidata.ucar.edu/downloads/tds/
       * modify `www:/content/downloads/tds/toc.xml` as needed
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
-21. Edit `www:/content/software/tds/latest.xml` to reflect the correct
-    releaseMinor version for stable and development. This file is read by all
-    TDS > v4.6 to make log entries regarding current stable and development versions
-    to give users a heads-up of the need to update.
-
-22. Commit the changes you've made.
+19. Commit the changes you've made.
     - At the very least, `project.version` in the root build script should have been modified.
     - `git add ...`
     - `git commit -m "Release ${releaseMinor}"`
 
-23. Prepare for next round of development.
+20. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
       * For example, `if ${releaseMinor} == "4.6.6"`, the next version will be "4.6.7-SNAPSHOT".
     - Commit the change.
       * `git add ...`
       * `git commit -m "Begin work on 4.6.7-SNAPSHOT"`
 
-24. Push the commits upstream.
+21. Push the commits upstream.
     - `git push --set-upstream <your-repo> ${releaseMinor}`
 
-25. Create a pull request on GitHub and wait for it to be merged.
-    - It should pull your changes on `<your-repo>/${releaseMinor}` into `Unidata/master`.
+22. Create a pull request on GitHub and wait for it to be merged.
+    - It should pull your changes on `<your-repo>/${releaseMinor}` into `Unidata/4.6.x`.
     - Alternatively, merge it yourself. As long as the changeset is small and non-controversial, nobody will care.
 
-26. Once merged, pull down the latest changes from master. You can also delete the release branch.
-    - `git checkout master`
+23. Once merged, pull down the latest changes from `4.6.x`. You can also delete the release branch.
+    - `git checkout 4.6.x`
     - `git pull`
     - `git branch -d ${releaseMinor}`
 
-27. In the git log, find the "Release ${releaseMinor}" commit and tag it with the version number.
+24. In the git log, find the "Release ${releaseMinor}" commit and tag it with the version number.
     - `git log`
     - `git tag v${releaseMinor} <commit-id>`
         * `HEAD~1` is usually the right commit, so you can probably do `git tag v${releaseMinor} HEAD~1`
     - You can't create this tag earlier because when our PR was merged above, GitHub rebased our original
       commits, creating brand new commits in the process. We want to apply the tag to the new commit,
-      because it will actually be part of `master`'s history.
+      because it will actually be part of `4.6.x`'s history.
 
-28. Push the release tag upstream.
+25. Push the release tag upstream.
     -  `git push origin v${releaseMinor}`
 
-29. Create a release on GitHub using the tag you just pushed.
+26. Create a release on GitHub using the tag you just pushed.
     - Example: https://github.com/Unidata/thredds/releases/tag/v4.6.7
     - To help create the changelog, examine the pull requests on GitHub. For example, this URL shows all PRs that
-      have been merged into `master` since 2016-02-12:
-      https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
+      have been merged into `4.6.x` since 2016-02-12:
+      https://github.com/Unidata/thredds/pulls?q=base%3A4.6.x+merged%3A%3E%3D2016-02-12
 
-30. Make blog post for the release.
+27. Make blog post for the release.
     - Example: s.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
     - Best to leave it relatively short and just link to the GitHub release.
 
-31. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
+28. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
     - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
     - Best to leave it relatively short and just link to the GitHub release.
+
+
+29. On the `main` branch, edit `downloads/tds/top_level_repo_files/latest.xml` to reflect the correct
+    releaseMinor version for stable and development. This file is read by all
+    TDS > v4.6 to make log entries regarding current stable and development versions
+    to give users a heads-up of the need to update. Once edited, run `./gradlew :downloads:updateLatestTdsReleaseInfo`
+    Also update the `version-info.json` under `docs/*` as needed, followed by `./gradlew :docs:updateAll`
 
 **Note 1**: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 23-25 for us. In the future, we
 should investigate similar Gradle plugins that offer the same functionality.
 
 **Note 2**: In the future, we should be performing many (all?) of these steps from Jenkins, not our local machine.
 
-**Note 3**: The latest.xml doc in step 21 is very simple and could probably be updated
+**Note 3**: The latest.xml doc in step 29 is very simple and could probably be updated
         automatically during the release process.

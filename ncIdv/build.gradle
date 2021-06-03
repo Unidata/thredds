@@ -14,9 +14,7 @@ ext.title = "ncIdv Module"
 ext {
     ncIdvJar = 'ncIdvs-' + version + '.jar'
     webstartWorkingDir = "build/signed"
-    if (project.hasProperty("webdir")) {
-        webstartDir = webdir + "webstart"
-    }
+    webstartDir = webdir + "webstart"
     destinationDir = 'build/libs/'
 }
 

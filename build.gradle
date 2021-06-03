@@ -40,6 +40,7 @@ ext {
             ':ncIdv', ':it', ':cdm-test', ':testUtil'
     ] }
     publishedProjects = allprojects - internalProjects      // Includes root project.
+    webdir = "${rootDir}/build/release/"
 }
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
