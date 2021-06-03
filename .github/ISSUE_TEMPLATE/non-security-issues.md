@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-This repository is for version **4.6.x** of the netCDF-Java library and THREDDS Data Server.
+This repository is for version **4.6.x** of the netCDF-Java library and THREDDS Data Server (see `4.6.x` branch).
 
 Starting with version **5.0**, the netCDF-Java libary and THREDDS Data Server live in separate repositories.
 Issues concerning TDS version _**>=5.0**_, or any version of netCDF-Java, should be opened in their respective github repository:
