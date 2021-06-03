@@ -534,7 +534,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     int connectionTimeout = 3; // http connection timeout in seconds
     Map<String, String> latestVersionInfo = new HashMap<>();
 
-    String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
+    String versionUrl = "https://downloads.unidata.ucar.edu/tds/startup/latest.xml";
     try {
       try (HTTPMethod method = HTTPFactory.Get(versionUrl)) {
         HTTPSession httpClient = method.getSession();

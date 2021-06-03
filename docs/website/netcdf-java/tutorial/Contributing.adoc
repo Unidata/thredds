@@ -18,9 +18,9 @@ Follow these steps to submit a pull request to Unidata:
 .. `git clone \https://github.com/<github_user_name>/thredds.git`
 . Change into the `thredds` directory.
 .. `cd thredds`
-. Create a branch for the changes that you will make based on `master`.
-.. `git checkout -b <branch_name> master`
-.. For instance: `git checkout -b fix_radar_iosp master`
+. Create a branch for the changes that you will make based on `4.6.x`.
+.. `git checkout -b <branch_name> 4.6.x`
+.. For instance: `git checkout -b fix_radar_iosp 4.6.x`
 . Make changes to the source code. See link:SourceCodeBuild.html[this tutorial] for help building THREDDS.
 . Commit your changes using the git link:http://git-scm.com/docs/git-add[add] and
       link:http://git-scm.com/docs/git-commit[commit] commands.

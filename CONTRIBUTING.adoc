@@ -70,7 +70,7 @@ Now you are all set!
 === Make sure you have the latest changes from Unidata THREDDS repository
 First, make sure you have the most recent changes to the THREDDS code by using git pull:
 
-`git pull unidata master`
+`git pull unidata 4.6.x`
 
 [[gh-branch]]
 === Make a new branch for your work and start hacking
@@ -239,7 +239,7 @@ However, the rebase has changed the history of your local branch, which means yo
 Finally, go to your personal remote repository on github.com and switch to your `mywork` branch.
 Once you are on your work branch, you will see a button that says "Pull request", which will allow you to make a pull request.
 
-The github pull request page will allow you to select which repository and branch you would like to submit the pull request to (the `base fork`, which should be `Unidata/thredds`, and `base`, which should be `master`), as well as the `head fork` and `compare` (which should be `<github-user-name/thredds>` and `mywork`, respectively).
+The github pull request page will allow you to select which repository and branch you would like to submit the pull request to (the `base fork`, which should be `Unidata/thredds`, and `base`, which should be `4.6.x`), as well as the `head fork` and `compare` (which should be `<github-user-name/thredds>` and `mywork`, respectively).
 Once this is setup, you can make the pull request.
 
 [[gh-now-what]]

@@ -21,7 +21,7 @@ You'll have a new folder named `thredds` in your working directory. Change into 
 cd thredds
 ----
 
-By default, the current branch head is set to `master`, which is our main development branch.
+By default, the current branch head is set to `4.6.x`, which is our main development branch for the 4.6.x line of the TDS.
 If you'd like to build a released version instead—v4.6.2, for example—you'll need to checkout that version:
 ----
 git checkout v4.6.2
@@ -46,7 +46,7 @@ our link:https://artifacts.unidata.ucar.edu[Nexus repository].
 However, it may happen that you need artifacts for the in-development version of THREDDS, which we usually don't
 upload to Nexus. Never fear: you can build them yourself and publish them to your local Maven repository!
 ----
-git checkout master
+git checkout 4.6.x
 ./gradlew publishToMavenLocal
 ----
 
