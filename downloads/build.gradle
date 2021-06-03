@@ -1,0 +1,34 @@
+plugins {
+  id 'edu.ucar.unidata.nexus' apply false
+}
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+
+def updateReleaseInfo = tasks.register("updateLatestTdsReleaseInfo", PublishToRawRepoTask) {
+  description "Publish tds_releases.xml to Nexus directly under tds/ of the downloads-tds repository."
+  group 'publishing'
+  host = 'https://artifacts.unidata.ucar.edu/'
+  repoName = "downloads-tds"
+  publishSrc = file("${projectDir}/tds/top_level_repo_files/")
+  destPath = 'startup/'
+}
+
+String getPropertyOrFailBuild(String key) {
+  if (!hasProperty(key)) {
+    throw new GradleException("You must define the '$key' property.")
+  } else {
+    property(key) as String
+  }
+}
+
+gradle.projectsEvaluated {
+  updateReleaseInfo.configure {
+    onlyIf {
+      // Will be evaluated at task execution time, not during configuration.
+      // Fails the build if the specified properties haven't been provided.
+      username = getPropertyOrFailBuild 'nexus.username'
+      password = getPropertyOrFailBuild 'nexus.password'
+      return true
+    }
+  }
+}

@@ -13,3 +13,4 @@ pluginManagement {
 rootProject.name = 'thredds-projects'
 
 include 'docs'
+include 'downloads'
