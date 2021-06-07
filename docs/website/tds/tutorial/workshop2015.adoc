@@ -156,7 +156,7 @@ to explore/discuss during this time. Potential topics include:
  ** Other:
  *** Some random table on some random dev's hard drive combined with (likely) wgrib(2)
  ** General GRIB file readers:
- *** link:https://www.unidata.ucar.edu/netcdf-java/4.6/userguide/documentation.htm[netCDF-Java] (and thus the TDS)
+ *** link:/netcdf-java/4.6/userguide/[netCDF-Java] (and thus the TDS)
  * Using ToolsUI with GRIB
  ** Viewer
  ** IOSP
