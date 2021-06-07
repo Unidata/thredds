@@ -116,9 +116,9 @@
 
 18. Update Unidata download page(s)
     - check https://www.unidata.ucar.edu/downloads/tds/
-      * modify `www:/content/downloads/tds/toc.xml` as needed
+      * modify `www:/content/downloads/tds/index.html` as needed
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/
-      * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
+      * modify `www:/content/downloads/netcdf-java/index.html` as needed
 
 19. Commit the changes you've made.
     - At the very least, `project.version` in the root build script should have been modified.
