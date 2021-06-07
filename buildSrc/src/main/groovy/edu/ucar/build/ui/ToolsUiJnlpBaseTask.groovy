@@ -104,7 +104,7 @@ class ToolsUiJnlpBaseTask extends DefaultTask {
                         title('NetCDF ToolsUI')
                         vendor('Unidata')
                         homepage(href: 'https://www.unidata.ucar.edu/' +
-                                       'software/thredds/current/netcdf-java/documentation.htm')
+                                       'software/netcdf-java/')
                         description(kind: 'short', 'Graphical interface to netCDF-Java / Common Data Model')
                         icon(href: 'nc.gif')
                         'offline-allowed'()

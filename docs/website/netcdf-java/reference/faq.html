@@ -84,7 +84,7 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
 <p><strong>Q: I have lots of data in a proprietary format. How do I read it into the CDM?</strong></p>
 <blockquote>
   <p>You write a class that implements the IO Service Provider interface, typically by subclassing <strong> ucar.nc2.iosp.AbstractIOServiceProvider</strong>.
-    See section 4 of the <a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
+    See section 4 of the <a href="../tutorial/index.html">tutorial</a>.</p>
 </blockquote>
 <p><strong>Q: I want to create a NetcdfFile from some other source than a file. But an IOSP is designed to get data from a RandomAccessFile. So what do I
   do?</strong></p>
@@ -290,7 +290,7 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
   </table>
   <p>The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. Generally it prefers to
     place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory, it will use
-    the <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined
+    the <a href="Caching.html">cache directory</a> defined
     by <strong>ucar.nc2.util.DiskCache.</strong></p>
 </blockquote>
 <h2><a id="Writing"></a>Writing</h2>
@@ -301,7 +301,7 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
     model</a>. Writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported
     using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to
     the <a href="netcdf4Clibrary.html">netCDF C library.</a> Writing the full
-    <a href="https://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
+    <a href="../CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
   <ul>
     <li>Program with complete control: <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc and <a href="../tutorial/NetcdfWriting.html">NetCDF File Writing tutorial</a>.</li>
     <li>Copy complete files from a program: <strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>

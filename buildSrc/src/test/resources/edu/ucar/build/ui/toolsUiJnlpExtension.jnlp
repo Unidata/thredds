@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="7.0" codebase="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart" version="1.5">
+<jnlp spec="7.0" codebase="https://downloads.unidata.ucar.edu/netcdf-java/4.6/webstart/" version="1.5">
     <component-desc/>
     
     <security>

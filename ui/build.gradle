@@ -1,4 +1,6 @@
 import com.google.common.collect.Iterables
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 import edu.ucar.build.ui.ToolsUiJnlpBaseTask
 import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
 
@@ -47,18 +49,15 @@ ext {
     // See http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/syntax.html#jnlp_elements
     // The Codebase attributes in the JAR manifest and JNLP must match, or else javaws fails to start with the error:
     // "Application Blocked by Java Security".
-    webstartCodebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/"
+    webstartCodebase = "https://downloads.unidata.ucar.edu/netcdf-java/4.6/webstart/"
     
     // Webstart can also work if both Codebase attributes are unspecified.
     // Setting this property to null will produce a manifest and JNLP files with no Codebase attributes.
     // LOOK: Use this for local Webstart testing; use the other for deployment to production.
-//     webstartCodebase = null
-    
+    //webstartCodebase = null
     webstartWorkingDir = "build/signed"
-    if (project.hasProperty("webdir")) {
-        webstartDir = new File(webdir, "webstart")
-    }
-    
+    webstartDir = new File(webdir, "webstart")
+
     depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
@@ -120,60 +119,60 @@ task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask, dependsOn: toolsUiJnlpExtension)
  * keystore=name of keystore file
  * keystoreAlias=idv
  * keystorePassword=password of keystore file
- * webdir:parent of conan content directory
- * ftpdir:ftp directory
  */
 // TODO: Use the Sync task for this.
-task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase']) << {
-    if (project.hasProperty("webdir") && project.hasProperty("keystore")
+task prepareWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase']) {
+    dependsOn tasks.findByPath(':assemble')
+    doLast {
+        if (project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
-        ant.delete(dir: webstartWorkingDir)
-        ant.mkdir(dir: webstartWorkingDir)
+            ant.delete(dir: webstartWorkingDir)
+            ant.mkdir(dir: webstartWorkingDir)
 
-        copy {
-            println "copyJnlp"
-            from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
-            from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
-            from rootProject.file('docs/website/netcdf-java/nc.gif')  // Referenced in the ToolsUI base JNLP file.
-            into webstartWorkingDir
-        }
+            copy {
+                println "copyJnlp"
+                from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+                from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
+                from rootProject.file('docs/website/netcdf-java/nc.gif')  // Referenced in the ToolsUI base JNLP file.
+                into webstartWorkingDir
+            }
 
-        println "signjar:"
-        println "\twebdir = $webdir"
-        println "\tkeystore = $keystore"
-        println "\tkeystoreAlias = $keystoreAlias"
-        println "\tkeystorePassword = $keystorePassword"
+            println "signjar:"
+            println "\tkeystore = $keystore"
+            println "\tkeystoreAlias = $keystoreAlias"
+            println "\tkeystorePassword = xxxx"
 
-        ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
+            ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
                 keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
 
-        for (file in configurations.runtime.resolve()) {
-            if (depsToRejar.contains(file.name)) {
-                println "$file contains duplicate entries or old signature files. Rejarring."
+            for (file in configurations.runtime.resolve()) {
+                if (depsToRejar.contains(file.name)) {
+                    println "$file contains duplicate entries or old signature files. Rejarring."
 
-                File rejarredFile = new File(temporaryDir, file.name)
-                rejar file, rejarredFile
-                file = rejarredFile
-            }
-            
-            println "Signing $file"
-            ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
+                    File rejarredFile = new File(temporaryDir, file.name)
+                    rejar file, rejarredFile
+                    file = rejarredFile
+                }
+
+                println "Signing $file"
+                ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
                     keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
-        }
+            }
 
-        ant.delete(dir: webstartDir)
-        ant.mkdir(dir: webstartDir)
+            ant.delete(dir: webstartDir)
+            ant.mkdir(dir: webstartDir)
 
-        copy {
-            println "copy2web"
-            from(webstartWorkingDir)
-            into webstartDir
+            copy {
+                println "copy2web"
+                from(webstartWorkingDir)
+                into webstartDir
+            }
+        } else {
+            println "Several properties (\"keystore\", \"keystoreAlias\", \"keystorePassword\" ) must be defined to run \"releaseWebstart\" task."
         }
-    } else {
-        println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
-        +"must be defined to run \"releaseWebstart\" task."
     }
 }
+
 
 ///////////////////////////////////////////////////////
 
@@ -195,23 +194,6 @@ javadoc {
     source = source.plus(fileTree(dir: '../dap4/d4shared/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../dap4/d4cdmshared/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../dap4/d4cdmclient/src/main/java', include: '**/*.java'))
-}
-
-task releaseDocs(dependsOn: javadoc, group: 'Release') << {
-    if (project.hasProperty("webdir")) {
-        String releaseDir = new File(webdir, "javadocAll").absolutePath
-
-        ant.delete(dir: releaseDir)
-        ant.mkdir(dir: releaseDir)
-
-        copy {
-            println "copyDocs to " + releaseDir
-            from("build/docs/javadoc")
-            into releaseDir
-        }
-    } else {
-        println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
-    }
 }
 
 ///////////////////////////////////////////////////////
@@ -263,5 +245,48 @@ def writeEntry(JarFile jar, JarEntry jarEntry, JarOutputStream jarOutStream) {
         }
     } finally {
         jarOutStream.closeEntry();
+    }
+}
+
+tasks.create('publishWebstart', PublishToRawRepoTask) {
+    description = 'Publish webstart files to Nexus under /major.minor/.'
+    repoName = 'downloads-netcdf-java'
+    publishSrc = "${rootDir}/build/release/webstart/"
+    destPath = '4.6/webstart/'
+    dependsOn prepareWebstart
+}
+
+// By default, this will perform a dry run, which simply prints the components that the query matched.
+// To actually delete those components, do:  ./gradlew -PdryRun=false :docs:deleteFromNexus
+tasks.create('deleteWebstart', DeleteFromNexusTask) {
+    description = 'Remove webstart files from Nexus under /major.minor/.'
+    searchQueryParameters.repository = 'downloads-netcdf-java'
+    searchQueryParameters.group = "/4.6/webstart*"
+}
+
+String getPropertyOrFailBuild(String key) {
+    if (!rootProject.hasProperty(key)) {
+        throw new GradleException("You must define the '$key' property in order to publish to Nexus.")
+    } else {
+        rootProject.property(key) as String
+    }
+}
+
+[PublishToRawRepoTask, DeleteFromNexusTask].forEach { taskType ->
+    tasks.withType(taskType).all {  // Common PublishToRawRepoTask config.
+        group = 'publishing'
+        host = 'https://artifacts.unidata.ucar.edu/'
+
+        if (taskType == DeleteFromNexusTask && project.hasProperty('dryRun')) {
+            dryRun = project.property('dryRun')
+        }
+
+        onlyIf {
+            // Will be evaluated at task execution time, not during configuration.
+            // Fails the build if the specified properties haven't been provided.
+            username = getPropertyOrFailBuild 'nexus.username'
+            password = getPropertyOrFailBuild 'nexus.password'
+            return true
+        }
     }
 }

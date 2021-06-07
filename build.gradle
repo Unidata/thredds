@@ -40,6 +40,7 @@ ext {
             ':ncIdv', ':it', ':cdm-test', ':testUtil'
     ] }
     publishedProjects = allprojects - internalProjects      // Includes root project.
+    webdir = "${rootDir}/build/release/"
 }
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
@@ -56,6 +57,9 @@ buildscript {
         maven {
             url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"  // For 'com.cwardgar.gretty-fork:gretty'.
         }
+        maven {
+            url 'https://artifacts.unidata.ucar.edu/repository/unidata-all/' // unidata-nexus
+        }
     }
     dependencies {
         classpath libraries["gretty"]
@@ -64,6 +68,7 @@ buildscript {
         classpath libraries["depcheck"]
     
         classpath libraries["guava"]  // For various utility methods used in the build scripts.
+        classpath libraries["unidata-nexus"] // publishing docs
     }
 }
 

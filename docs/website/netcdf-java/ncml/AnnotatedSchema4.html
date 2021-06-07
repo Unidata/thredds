@@ -105,12 +105,12 @@
   <LI>The optional <em><strong>enhance<a name="enhance"></a></strong></em> attribute indicates whether the referenced dataset is opened in enhanced mode, and
     can be set to <em>All, AllDefer, ScaleMissing, ScaleMissingDefer, CoordSystems, or None </em>(case insensitive). For backwards compatibility, a value of
     <em>true</em> means <em>All</em>. Default is <em>None</em>. See
-    <a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance">NetcdfDataset.EnhanceMode</a>.
+    <a href="../tutorial/NetcdfDataset.html#enhance">NetcdfDataset.EnhanceMode</a>.
   <LI>The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a
     Structure named <em><strong>record</strong></em> is added, containing the record (unlimited) variables. This allows one to read efficiently along the
     unlimited dimension.
   <LI>These 3 parameters control how the referenced dataset is opened by the IOServiceProvider. If <strong>iosp</strong> is specified, its value must be a fully
-    qualified class name of an <strong><a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>
+    qualified class name of an <strong><a href="../tutorial/IOSPoverview.html">IOServiceProvider</a></strong>
     class that knows how to open the file specified by <strong>location</strong>. The optional <strong>iospParam</strong> is passed to the IOSP through the
     <strong>IOServiceProvider</strong>.setSpecial() method. The optional <strong>bufferSize</strong> tells the IOSP how many bytes to use for buffering the file
     data.

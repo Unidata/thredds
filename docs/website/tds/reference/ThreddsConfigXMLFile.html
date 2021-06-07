@@ -19,7 +19,7 @@
   exception is that the <code>catalogRoot</code> elements will be reread by
   doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
 
-<p><a href="https://raw.githubusercontent.com/Unidata/thredds/master/tds/src/main/webapp/WEB-INF/altContent/startup/threddsConfig.xml">Here</a>
+<p><a href="https://raw.githubusercontent.com/Unidata/thredds/4.6.x/tds/src/main/webapp/WEB-INF/altContent/startup/threddsConfig.xml">Here</a>
   is an annotated example <code>threddsConfig.xml</code>.</p>
 
 <hr style="width: 100%; height: 2px;">
@@ -423,7 +423,7 @@ where:
 <p align="justify">In order to write netCDF-4 files, you must have the
   <a href="https://www.unidata.ucar.edu/downloads/netcdf/">netCDF-4 C library</a>&mdash;version 4.3.1 or
   above&mdash;compiled and available on your system, along with all supporting libraries (HDF5, zlib, and curl). The
-  <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">details</a> of this differ
+  <a href="/netcdf-java/4.6/userguide/reference/netcdf4Clibrary.html">details</a> of this differ
   for each operating system. The elements above allow you to configure how the library is discovered and used.</p>
 
 <ul>
@@ -448,9 +448,9 @@ where:
   &lt;table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;
 &lt;/nj22Config&gt;
 </pre>
-<p>These elements allow you to specify <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">runtime parameters</a> for the
+<p>These elements allow you to specify <a href="/netcdf-java/4.6/userguide/reference/RuntimeLoading.html">runtime parameters</a> for the
   Netcdf-Java library from the threddsConfig file. See the Netcdf-Java
-  <a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/">tutorial</a> for an overview.</p>
+  <a href="/netcdf-java/4.6/userguide/tutorial/">tutorial</a> for an overview.</p>
 <h3><a name="Aggregation">Aggregation</a></h3>
 <pre>
 &lt;Aggregation&gt;

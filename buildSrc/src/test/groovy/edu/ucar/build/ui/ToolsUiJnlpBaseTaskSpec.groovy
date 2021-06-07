@@ -30,7 +30,7 @@ class ToolsUiJnlpBaseTaskSpec extends Specification {
         and: "create a writer without application argument"
         ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer()
         writer.with {
-            codebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart"
+            codebase = "https://downloads.unidata.ucar.edu/netcdf-java/4.6/webstart/"
             applicationVersion = '1.5'
             targetCompatibility = JavaVersion.VERSION_1_7
             extensionJnlpFileName = "netCDFtoolsExtraJars.jnlp"
