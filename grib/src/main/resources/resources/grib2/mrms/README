@@ -2,3 +2,18 @@ MergedTableCode.txt generated from convert_mrms_table.py (in v5 of netCDF-Java)
 
 2021-02-02 sarms
   - Updated to version 12.0 of the MRMS GRIB2 parameter table. Backported from v5 (https://github.com/Unidata/netcdf-java/pull/601/)
+
+2021-06-14 sarms
+  - "Hotfix" for the version 12 GIRB table. Confirmed by NSSL (Carrie Langston). From email:
+
+      "The values you're seeing are correct. The following FLASH products use -9999:
+       FLASH_CREST_MAXSOILSAT
+       FLASH_CREST_MAXSTREAMFLOW
+       FLASH_CREST_MAXUNITSTREAMFLOW
+       FLASH_HP_MAXSTREAMFLOW
+       FLASH_HP_MAXUNITSTREAMFLOW
+       FLASH_SAC_MAXSOILSAT
+       FLASH_SAC_MAXSTREAMFLOW
+       FLASH_SAC_MAXUNITSTREAMFLOW"
+
+   Will probably show up in the 12.1 update, but wanted to get this out now. Will remove once "officially" released.
