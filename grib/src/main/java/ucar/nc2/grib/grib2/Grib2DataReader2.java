@@ -865,6 +865,7 @@ public class Grib2DataReader2 {
     // LOOK: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
     // totalNPoints in the grid record if bitMap is used, otherwise equal
+    // Might also be less for 24- or 32-bit bit-depths, but do not have an example to test.
     float[] data = new float[totalNPoints];
 
     // no data to decode, set to reference value
@@ -891,16 +892,19 @@ public class Grib2DataReader2 {
               image.getColorModel().getPixelSize(), nb);
 
     DataBuffer db = image.getRaster().getDataBuffer();
+    int numBands = image.getRaster().getNumBands();
     if (bitmap == null) {
       for (int i = 0; i < dataNPoints; i++) {
-//        data[i] = (R + imageData[i] * EE) / DD;
-        data[i] = (R + db.getElem(i) * EE) / DD;
+        int offset = i * numBands;
+        int gridValue = decodePng(numBands, offset, db);
+        data[i] = (R + gridValue * EE) / DD;
       }
     } else {
       for (int bitPt = 0, dataPt = 0; bitPt < totalNPoints; bitPt++) {
         if ((bitmap[bitPt / 8] & GribNumbers.bitmask[bitPt % 8]) != 0) {
-//          data[i] = (R + imageData[i] * EE) / DD;
-          data[bitPt] = (R + db.getElem(dataPt++) * EE) / DD;
+          int offset = dataPt++ * numBands;
+          int gridValue = decodePng(numBands, offset, db);
+          data[bitPt] = (R + gridValue * EE) / DD;
         } else {
           data[bitPt] = staticMissingValue;
         }
@@ -908,6 +912,42 @@ public class Grib2DataReader2 {
     }
 
     return data;
+  }
+
+  private int decodePng(int numBands, int offset, DataBuffer db) throws IOException {
+    int red, green, blue, gridValue = 0;
+    switch (numBands) {
+      case 1: // grayscale
+        gridValue = db.getElem(offset);
+        break;
+      case 3: // RGB
+      case 4: // RGBA
+        // java.awt.image.IndexColorModel$getDataElement pixel value from components:
+        // (components[offset+0]<<16) | (components[offset+1]<<8) |
+        // (components[offset+2]) | (components[offset + 3] << 24)"
+        //
+        // java.awt.image.IndexColorModel$getDataElements components from pixel value
+        // int red = (rgb>>16) & 0xff;
+        // int green = (rgb>>8) & 0xff;
+        // int blue = rgb & 0xff;
+        // int alpha = (rgb>>>24);
+        //
+        // with this information, we can feel pretty confident that what we need is:
+        red = Byte.toUnsignedInt((byte) db.getElem(offset));
+        green = Byte.toUnsignedInt((byte) db.getElem(offset + 1));
+        blue = Byte.toUnsignedInt((byte) db.getElem(offset + 2));
+        if (numBands == 3) {
+          // based on order in java.awt.image.IndexColorModel$getDataElements
+          gridValue = GribNumbers.uint3(blue, green, red);
+        } else {
+          int alpha = Byte.toUnsignedInt((byte) db.getElem(offset + 3));
+          gridValue = GribNumbers.int4(alpha, blue, green, red);
+        }
+        break;
+      default:
+        throw new IOException("Cannot handle png compressed GRIB messages with " + numBands + " samples per pixel.");
+    }
+    return gridValue;
   }
 
   // by jkaehler@meteomatics.com
