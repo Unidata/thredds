@@ -93,14 +93,14 @@ public class wwwOutPut {
 
         pWrt.print("<tr>"
                 + "<td align=\"right\">\n"
-                + "<h3><a href=\"opendap_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n"
+                + "<h3><a href=\"https://opendap.github.io/documentation/QuickStart.html#_what_to_do_with_an_opendap_url\" valign=\"bottom\">Action:</a></h3>\n"
                 + "<td><input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n"
                 + "<input type=\"button\" value=\"Get Binary\" onclick=\"binary_button()\">\n"
 //            + "<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">\n" // removed 9/17/01 ndp
                 + "<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n"
                 + "<tr>\n"
                 + "<td align=\"right\">\n"
-                + "<h3><a href=\"opendap_form_help.html#data_url\" valign=\"bottom\">Data URL:</a></h3>"
+                + "<h3><a href=\"https://opendap.github.io/documentation/QuickStart.html#_what_to_do_with_an_opendap_url\" valign=\"bottom\">Data URL:</a></h3>"
                 + "<td><input name=\"url\" type=\"text\" size="
                 + _attrCols
                 + " value=\""
@@ -113,7 +113,7 @@ public class wwwOutPut {
 
         pWrt.print("<tr>\n"
                 + "<td align=\"right\" valign=\"top\">\n"
-                + "<h3><a href=\"opendap_form_help.html#global_attr\">Global Attributes:</a></h3>\n"
+                + "<h3><a href=\"https://opendap.github.io/documentation/QuickStart.html#_what_to_do_with_an_opendap_url\">Global Attributes:</a></h3>\n"
                 + "<td><textarea name=\"global_attr\" rows="
                 + _attrRows
                 + " cols="
@@ -232,7 +232,7 @@ public class wwwOutPut {
 
         pWrt.print("<tr>\n"
                 + "<td align=\"right\" valign=\"top\">\n"
-                + "<h3><a href=\"opendap_form_help.html#dataset_variables\">Variables:</a></h3>\n"
+                + "<h3><a href=\"https://opendap.github.io/documentation/QuickStart.html#_what_to_do_with_an_opendap_url\">Variables:</a></h3>\n"
                 + "<br><td>\n"
         );
 

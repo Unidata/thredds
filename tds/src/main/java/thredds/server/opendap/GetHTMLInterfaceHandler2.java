@@ -62,11 +62,11 @@ public class GetHTMLInterfaceHandler2
 {
 
     private static final boolean _Debug = false;
-    private String helpLocation = "http://www.opendap.org/online_help_files/";
+    private String helpLocation = "https://www.opendap.org/support/user-documentation";
 
     private String serverContactName = ThreddsConfig.get( "serverInformation.contact.name", "UNKNOWN" );
     private String serverContactEmail = ThreddsConfig.get( "serverInformation.contact.email", "UNKNOWN" );
-    private String odapSupportEmail = "support@opendap.org";
+    private String odapSupportEmail = "support-thredds@unidata.ucar.edu";
 
   /**
      * ************************************************************************
@@ -179,7 +179,7 @@ public class GetHTMLInterfaceHandler2
             pw.println( "<p>For questions or comments about this dataset, contact the administrator of this server ["
                       + serverContactName + "] at: <a href='mailto:" + serverContactEmail + "'>"
                       + serverContactEmail + "</a></p>");
-            pw.println( "<p>For questions or comments about OPeNDAP, email OPeNDAP support at:"
+            pw.println( "<p>For questions or comments about the OPeNDAP service bundled with the TDS, email THREDDS support at:"
                         + " <a href='mailto:" + odapSupportEmail + "'>" + odapSupportEmail + "</a></p>" );
           pw.println( "</address></body></html>" );
 
