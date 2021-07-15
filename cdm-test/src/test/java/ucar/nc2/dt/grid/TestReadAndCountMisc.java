@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -44,6 +45,8 @@ import ucar.unidata.util.test.TestDir;
  * @since 3/5/2015
  */
 @Category(NeedsExternalResource.class)
+// todo: make sure these are represented in the new iteration of TDSter.
+@Ignore("Drifted a log time ago and these are more about keeping an eye on Unidata realtime data feeds.")
 public class TestReadAndCountMisc {
   // For some reason, this fails on Travis after a 10-minute timeout. It succeeds everywhere else.
   // We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
