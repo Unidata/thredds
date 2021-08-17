@@ -106,10 +106,10 @@ public class Rewrite {
         for (int i=1; i<dims.size(); i++)
           sb.append(dims.get(i).getShortName()).append(" ");
         sb.append(dims.get(0).getShortName());
-        nv = ncOut.addVariable(null, v.getShortName(), v.getDataType(), sb.toString());
+        nv = ncOut.addVariable(newGroup, v.getShortName(), v.getDataType(), sb.toString());
 
       } else {
-        nv = ncOut.addVariable(null, v.getShortName(), v.getDataType(), v.getDimensionsString());
+        nv = ncOut.addVariable(newGroup, v.getShortName(), v.getDataType(), v.getDimensionsString());
       }
 
       for (Attribute att : v.getAttributes())

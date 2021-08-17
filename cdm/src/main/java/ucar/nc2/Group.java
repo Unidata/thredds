@@ -241,7 +241,10 @@ public class Group extends CDMNode implements AttributeContainer {
     Group parent = getParentGroup();
     if (parent != null)
       return parent.findDimension(name);
-
+    for (Group subGroup : getGroups()) {
+      d = subGroup.findDimensionLocal(name);
+      if (d != null) return d;
+    }
     return null;
   }
 
@@ -590,7 +593,8 @@ public class Group extends CDMNode implements AttributeContainer {
 
     if (findVariable(v.getShortName()) != null) {
       //Variable other = findVariable(v.getShortName()); // debug
-      throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
+//      throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
+      return;
     }
 
     variables.add(v);

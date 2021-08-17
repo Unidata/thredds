@@ -936,6 +936,7 @@ public class NetcdfFileWriter implements Closeable {
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void write(Variable v, Array values) throws java.io.IOException, InvalidRangeException {
+    if (v == null) return;
     if (ncfile != v.getNetcdfFile())
       throw new IllegalArgumentException("Variable is not owned by this writer.");
 

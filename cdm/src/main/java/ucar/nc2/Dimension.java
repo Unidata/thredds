@@ -231,12 +231,15 @@ public class Dimension extends CDMNode implements Comparable {
     Dimension other = (Dimension) oo;
     Group g = getGroup();
     if ((g != null) && !g.equals(other.getGroup())) return false;
-    if ((getShortName() == null) && (other.getShortName() != null)) return false;
-    if ((getShortName() != null) && !getShortName().equals(other.getShortName())) return false;
+    if ((getShortName() == null) || (other.getShortName() == null)) return false;
+
+    String fullName = NetcdfFile.makeValidCdmObjectName(getFullName());
+    String otherFullName = NetcdfFile.makeValidCdmObjectName(other.getFullName());
     return (getLength() == other.getLength()) &&
             (isUnlimited() == other.isUnlimited()) &&
             (isVariableLength() == other.isVariableLength()) &&
-            (isShared() == other.isShared());
+            (isShared() == other.isShared()) &&
+            (fullName.equals(otherFullName));
   }
 
   /**
