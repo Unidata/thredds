@@ -241,7 +241,10 @@ public class Group extends CDMNode implements AttributeContainer {
     Group parent = getParentGroup();
     if (parent != null)
       return parent.findDimension(name);
-
+    for (Group subGroup : getGroups()) {
+      d = subGroup.findDimensionLocal(name);
+      if (d != null) return d;
+    }
     return null;
   }
 

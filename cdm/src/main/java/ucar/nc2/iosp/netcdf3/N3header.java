@@ -682,8 +682,8 @@ public class N3header {
         if (largeFile)
           raf.writeLong(pos);
         else {
-          if (pos > Integer.MAX_VALUE)
-            throw new IllegalArgumentException("Variable starting pos="+pos+" may not exceed "+ Integer.MAX_VALUE);          
+          if (pos > Long.MAX_VALUE)
+            throw new IllegalArgumentException("Variable starting pos="+pos+" may not exceed "+ Long.MAX_VALUE);
           raf.writeInt((int) pos);
         }
 
