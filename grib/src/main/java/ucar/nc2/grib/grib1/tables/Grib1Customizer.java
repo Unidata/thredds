@@ -233,6 +233,7 @@ public class Grib1Customizer implements GribTables {
       }
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 

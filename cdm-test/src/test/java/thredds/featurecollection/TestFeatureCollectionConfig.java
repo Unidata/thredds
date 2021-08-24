@@ -104,6 +104,7 @@ public class TestFeatureCollectionConfig {
     File configFile = new File(TestDir.cdmUnitTestDir+"tds/config/fnmoc.xml");
     org.jdom2.Document doc;
     SAXBuilder builder = new SAXBuilder();
+    builder.setExpandEntities(false);
     doc = builder.build(configFile);
 
     XMLOutputter xmlOut = new XMLOutputter();

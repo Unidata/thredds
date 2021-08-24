@@ -73,6 +73,7 @@ public class TableA {
 
       HashMap<Integer, String> map = new HashMap<>(100);
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document tdoc = builder.build(is);
       org.jdom2.Element root = tdoc.getRootElement();
 

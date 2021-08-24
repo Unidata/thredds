@@ -129,7 +129,7 @@
   <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( is, errlog);
 
   // Example 3: extract JDOM element from a larger XML document:
-  Document doc;<br>  SAXBuilder saxBuilder = new SAXBuilder();<br>  try {<br>    doc = saxBuilder.build(filename);<br>  } catch (JDOMException e) {<br>    throw new IOException(e.getMessage());<br>  }
+  Document doc;<br>  SAXBuilder saxBuilder = new SAXBuilder();<br>  saxBuilder.setExpandEntities(false);<br>  try {<br>    doc = saxBuilder.build(filename);<br>  } catch (JDOMException e) {<br>    throw new IOException(e.getMessage());<br>  }
   Element root = doc.getRootElement();<br>  Element elem<strong> = </strong>root.getChild(&quot;<strong>nj22Config</strong>&quot;);
   if (elem != null)
     <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);

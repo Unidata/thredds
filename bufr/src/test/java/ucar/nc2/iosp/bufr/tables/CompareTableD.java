@@ -64,6 +64,7 @@ public class CompareTableD {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(bmt);
       Element root = doc.getRootElement();
       int count = makeBmtTable(root.getChildren("featureCatalogue"));
@@ -202,6 +203,7 @@ public class CompareTableD {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(robbxml);
       Element root = doc.getRootElement();
       int count = makeTable(root.getChildren("sequence"));

@@ -92,6 +92,7 @@ public class UnidataTdsDataPathRemapper {
             }
 
             SAXBuilder builder = new SAXBuilder();
+            builder.setExpandEntities(false);
             org.jdom2.Document doc = builder.build(is);
             org.jdom2.Element root = doc.getRootElement();
             List<org.jdom2.Element> dsElems = root.getChildren("urlMap");

@@ -58,6 +58,7 @@ public class Parse {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(location);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

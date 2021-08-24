@@ -89,6 +89,7 @@ public class TestWcsServer {
     String xml = response.getBody(String.class);
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
+    sb.setExpandEntities(false);
     Document doc = sb.build(in);
 
     System.out.printf("%s%n", xml);

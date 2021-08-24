@@ -62,6 +62,7 @@ public class CatalogConfigReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(catFile);
     } catch (Exception e) {
       e.printStackTrace();

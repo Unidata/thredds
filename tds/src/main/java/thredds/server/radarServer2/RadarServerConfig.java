@@ -30,6 +30,7 @@ public class RadarServerConfig {
         List<RadarConfigEntry> configs = new ArrayList<>();
 
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         File f = new File(filename);
         try {
             Document doc = builder.build(f);

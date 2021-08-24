@@ -50,6 +50,7 @@ public class NcssIntegrationTest {
     System.out.printf("xml=%s%n", xml);
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
+    sb.setExpandEntities(false);
     Document doc = sb.build(in);
 
     XPathExpression<Element> xpath = XPathFactory.instance().compile("/grid/point/data[@name='Temperature_isobaric']", Filters.element());

@@ -182,6 +182,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         doc = builder.build(ios);
       } catch (JDOMException e) {
         throw new IOException(e.getMessage());

@@ -76,6 +76,7 @@ public class NcmlCollectionReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(validate);
+      builder.setExpandEntities(false);
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
     } catch (JDOMException e) {

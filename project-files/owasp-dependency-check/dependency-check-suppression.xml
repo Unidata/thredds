@@ -39,4 +39,12 @@
     <cve>CVE-2020-29244</cve>
     <cve>CVE-2020-29245</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: jdom2-2.0.6.jar
+       reason: mitigated by https://github.com/Unidata/thredds/pull/1368
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.jdom/jdom2@.*$</packageUrl>
+    <cve>CVE-2021-33813</cve>
+  </suppress>
 </suppressions>

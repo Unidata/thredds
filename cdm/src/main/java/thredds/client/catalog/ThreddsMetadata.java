@@ -541,6 +541,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     private List<Variable> getVariablesFromMap() {
       try {
         SAXBuilder saxBuilder = new SAXBuilder();
+        saxBuilder.setExpandEntities(false);
         org.jdom2.Document jdomDoc = saxBuilder.build(variableMap.resolved.toURL());
         Element varsElem = jdomDoc.getRootElement();
 

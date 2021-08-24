@@ -241,7 +241,8 @@ public class XMLStore {
   private InputStream convert2XmlDecoder(InputStream is) throws IOException {
     org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(false);
+      SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(is);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

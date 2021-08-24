@@ -502,6 +502,7 @@ TBLE2 cptec_254_params[] = {
       if (is == null) return false;
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
       parameters = parser.parseXml(root);  // all at once - thread safe

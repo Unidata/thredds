@@ -405,6 +405,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   public XMLEntityResolver(boolean validate) {
     saxBuilder = hasXerces ? new SAXBuilder( validate) : new SAXBuilder("org.apache.xerces.parsers.SAXParser", validate);
     saxBuilder.setErrorHandler( new MyErrorHandler() );
+    saxBuilder.setExpandEntities(false);
     if (validate) {
       saxBuilder.setFeature( "http://apache.org/xml/features/validation/schema", true);
       saxBuilder.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation",
