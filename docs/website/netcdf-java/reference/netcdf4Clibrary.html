@@ -19,19 +19,6 @@
 <p>For all platforms, we strongly recommend 64-bit Java, if you can run it. Also, be sure to use the latest version, as
     security improvements are constantly being made.</p>
 
-<h3><a name="thread_safety" id="thread_safety">Thread safety</a></h3>
-
-<p>Any pre-built version of libnetcdf that you install&mdash;whether from a package manager or from a download
-    page&mdash;is likely to <strong>not</strong> be thread-safe. This is because
-    <a href="https://www.hdfgroup.org/HDF5/">libhdf5</a> (which libnetcdf depends on
-    to write NetCDF-4 files) is usually not configured for thread safety when it's built. As a result,
-    concurrent writing of NetCDF-4 files will sometimes produce unexpected results.</p>
-
-<p>When might you do concurrent writes of NetCDF-4 files? For <a href="/tds/4.6/adminguide/TDS.html">TDS</a> administrators,
-    this can often happen in the <a href="/tds/4.6/adminguide/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service
-        (NCSS)</a>. Therefore, we recommend that TDS admins who enable NCSS with NetCDF-4 output
-    <a href="#installation_linux_source_build">build thread-safe libraries from source</a> instead.</p>
-
 <h3><a name="installation_linux" id="installation_linux">Linux</a></h3>
 
 <h4><a name="installation_linux_pre_built" id="installation_linux_pre_built">Pre-built</a></h4>
@@ -43,18 +30,7 @@
 <h4><a name="installation_linux_source_build" id="installation_linux_source_build">Build from source</a></h4>
 
 <p>Instructions for how to build libnetcdf from source can be found <a
-        href="https://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html">here</a>. However,
-   in order to produce a thread-safe version of libhdf5, you'll want to run the <code>configure</code>
-   script with the following arguments:</p>
-<pre>
-./configure --with-zlib=${ZDIR} --prefix=${H5DIR} --enable-threadsafe --with-pthread=${PDIR} --enable-unsupported
-</pre>
-
-<p><code>PDIR</code> must point to the directory that contains the
-    <a href="https://computing.llnl.gov/tutorials/pthreads/">POSIX Threads library</a>. That is,
-    <code>${PDIR}/include/pthread.h</code> and <code>${PDIR}/lib/libpthread*</code> both must exist. On many *nix
-    systems, <code>PDIR</code> is often <code>/usr</code>. For more information, please see the
-    <a href="http://www.hdfgroup.org/hdf5-quest.html#mthread">HDF5 FAQ</a>.</p>
+        href="https://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html">here</a>.
 
 <h3><a name="installation_mac" id="installation_mac">Mac</a></h3>
 
@@ -66,23 +42,11 @@
             href="https://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11807.html">Here</a> is a support
     question that may be useful.</p>
 
-<h4><a name="installation_mac_source_build" id="installation_mac_source_build">Build from source</a></h4>
-
-<p>This is identical to the <a href="#installation_linux_source_build">Linux build</a>.</p>
-
 <h3><a name="installation_windows" id="installation_windows">Windows</a></h3>
 
 <h4><a name="installation_windows_pre_built" id="installation_windows_pre_built">Pre-built</a></h4>
 
 <p>Pre-built binaries are available <a href="https://www.unidata.ucar.edu/software/netcdf/docs/winbin.html">here</a>.</p>
-
-<h4><a name="installation_windows_source_build" id="installation_windows_source_build">Build from source</a></h4>
-
-<p>Instructions for how to build libnetcdf from source can be found <a
-        href="https://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#netCDF-CMake">here</a>.
-    Currently, it's unknown how&mdash;or even <em>if</em>&mdash;thread-safe libhdf5 binaries can be built on Windows. If
-    you've tried it yourself, please <a href="mailto:support-netcdf-java@unidata.ucar.edu">let us know</a> your results!
-</p>
 
 <h2><a name="loading" id="loading">Loading</a></h2>
 
