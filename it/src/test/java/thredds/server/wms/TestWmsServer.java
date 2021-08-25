@@ -80,6 +80,7 @@ public class TestWmsServer {
      String xml = response.getBody(String.class);
      Reader in = new StringReader(xml);
      SAXBuilder sb = new SAXBuilder();
+     sb.setExpandEntities(false);
      Document doc = sb.build(in);
 
      XPathExpression<Element> xpath = XPathFactory.instance().compile("//wms:Capability/wms:Layer/wms:Layer/wms:Layer", Filters.element(), null, NS_WMS);

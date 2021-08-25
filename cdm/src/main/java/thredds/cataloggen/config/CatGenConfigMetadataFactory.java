@@ -92,6 +92,7 @@ public class CatGenConfigMetadataFactory
     try
     {
       SAXBuilder builder = new SAXBuilder( true);
+      builder.setExpandEntities(false);
       doc = builder.build( urlString);
     } catch ( JDOMException e)
     {

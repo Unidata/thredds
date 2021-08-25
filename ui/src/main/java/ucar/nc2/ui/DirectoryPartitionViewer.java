@@ -240,6 +240,7 @@ public class DirectoryPartitionViewer extends JPanel {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(f.toFile());
     } catch (Exception e) {
       javax.swing.JOptionPane.showMessageDialog(this, "Error parsing featureCollection: " + e.getMessage());

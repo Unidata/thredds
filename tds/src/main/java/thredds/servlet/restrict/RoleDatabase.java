@@ -58,6 +58,7 @@ public class RoleDatabase implements RoleSource {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(is);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

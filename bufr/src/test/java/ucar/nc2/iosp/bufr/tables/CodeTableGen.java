@@ -119,6 +119,7 @@ public class CodeTableGen {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.xml");
 
       Format pretty = Format.getPrettyFormat();
@@ -188,6 +189,7 @@ public class CodeTableGen {
     org.jdom2.Document orgDoc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       orgDoc = builder.build(orgXml);
 
       org.jdom2.Document tdoc = new org.jdom2.Document();
@@ -264,6 +266,7 @@ public class CodeTableGen {
     org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       tdoc = builder.build(trans1);
 
       org.jdom2.Document ndoc = new org.jdom2.Document();
@@ -347,6 +350,7 @@ public class CodeTableGen {
     org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       tdoc = builder.build(trans2);
 
       /* org.jdom2.Document ndoc = new org.jdom2.Document();

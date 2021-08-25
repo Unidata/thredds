@@ -63,6 +63,7 @@ public class FeatureCollectionConfigBuilder {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(filename);
     } catch (Exception e) {
       System.out.printf("Error parsing featureCollection %s err = %s", filename, e.getMessage());
@@ -95,6 +96,7 @@ public class FeatureCollectionConfigBuilder {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(cat);
     } catch (Exception e) {
       e.printStackTrace();

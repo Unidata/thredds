@@ -35,6 +35,7 @@ package ucar.nc2.dt.grid;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -46,6 +47,8 @@ import ucar.unidata.util.test.TestDir;
 
 @RunWith(Parameterized.class)
 @Category(NeedsExternalResource.class)
+// todo: make sure these are represented in the new iteration of TDSter.
+@Ignore("Drifted a log time ago and these are more about keeping an eye on Unidata realtime datafeeds.")
 public class TestReadAndCountDods {
   static String base = "thredds:resolve:http://"+ TestDir.threddsTestServer+"/thredds/";
 

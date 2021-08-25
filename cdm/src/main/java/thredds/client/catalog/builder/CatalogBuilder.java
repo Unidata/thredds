@@ -179,6 +179,7 @@ public class CatalogBuilder {
 
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
+      saxBuilder.setExpandEntities(false);
       org.jdom2.Document jdomDoc = saxBuilder.build(uri.toURL());
       readCatalog(catBuilder, jdomDoc.getRootElement(), uri);
 
@@ -794,6 +795,7 @@ public class CatalogBuilder {
 
   private Element readMetadataFromUrl(java.net.URI uri) throws java.io.IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());

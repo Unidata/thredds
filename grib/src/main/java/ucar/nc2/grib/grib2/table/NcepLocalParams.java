@@ -126,6 +126,7 @@ class NcepLocalParams {
         }
 
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
         paramMap = parseXml(root);  // all at once - thread safe
@@ -150,6 +151,7 @@ class NcepLocalParams {
           return false;
         }
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
         paramMap = parseXml(root);  // all at once - thread safe

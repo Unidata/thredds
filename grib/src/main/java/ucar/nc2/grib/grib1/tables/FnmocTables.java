@@ -100,6 +100,7 @@ public class FnmocTables extends Grib1Customizer {
       }
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
@@ -164,6 +165,7 @@ public class FnmocTables extends Grib1Customizer {
       }
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 

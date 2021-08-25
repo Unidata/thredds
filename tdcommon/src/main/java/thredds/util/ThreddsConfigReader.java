@@ -69,6 +69,7 @@ public class ThreddsConfigReader {
     try {
       InputStream is = new FileInputStream(filename);
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(is);
     } catch (IOException | JDOMException e) {
     	log.error( "ThreddsConfigReader: incorrectly formed xml file [" + filename + "]: " + e.getMessage());

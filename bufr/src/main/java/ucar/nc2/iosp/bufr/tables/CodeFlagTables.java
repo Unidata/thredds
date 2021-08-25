@@ -130,6 +130,7 @@ public class CodeFlagTables {
     String filename = BufrTables.RESOURCE_PATH + CodeFlagFilename;
     try (InputStream is = CodeFlagTables.class.getResourceAsStream(filename)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document tdoc = builder.build(is);
       org.jdom2.Element root = tdoc.getRootElement();
 

@@ -95,6 +95,7 @@ public class TestUTF8GetCapabilitiesEncoding {
         ByteArrayInputStream bin = new ByteArrayInputStream(content);
         try {
           SAXBuilder builder = new SAXBuilder();
+          builder.setExpandEntities(false);
           org.jdom2.Document tdoc = builder.build(bin);
           org.jdom2.Element root = tdoc.getRootElement();
 

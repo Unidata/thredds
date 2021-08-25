@@ -218,6 +218,7 @@ public class WmsViewer extends JPanel {
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document tdoc = builder.build(method.getResponseAsStream());
       org.jdom2.Element root = tdoc.getRootElement();
       parseGetCapabilities(root);

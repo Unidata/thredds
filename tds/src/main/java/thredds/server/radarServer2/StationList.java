@@ -109,6 +109,7 @@ public class StationList {
 
     public void loadFromXmlFile(String filename) {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         File f = new File(filename);
         try {
             Document doc = builder.build(f);

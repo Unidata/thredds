@@ -84,6 +84,7 @@ public class CompareTableB {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(bmt);
       Element root = doc.getRootElement();
       int count = makeBmtTable(root.getChildren("featureCatalogue"));

@@ -105,6 +105,7 @@ public class CdmrFeatureDataset {
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
     try (InputStream in = CdmRemote.sendQuery(endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(in);
 
       if (showXML) {
