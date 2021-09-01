@@ -252,7 +252,7 @@ tasks.create('publishWebstart', PublishToRawRepoTask) {
     description = 'Publish webstart files to Nexus under /major.minor/.'
     repoName = 'downloads-netcdf-java'
     publishSrc = "${rootDir}/build/release/webstart/"
-    destPath = '4.6/webstart/'
+    destPath = 'netcdf-java/4.6/webstart/'
     dependsOn prepareWebstart
 }
 
@@ -261,7 +261,7 @@ tasks.create('publishWebstart', PublishToRawRepoTask) {
 tasks.create('deleteWebstart', DeleteFromNexusTask) {
     description = 'Remove webstart files from Nexus under /major.minor/.'
     searchQueryParameters.repository = 'downloads-netcdf-java'
-    searchQueryParameters.group = "/4.6/webstart*"
+    searchQueryParameters.group = "/netcdf-java/4.6/webstart*"
 }
 
 String getPropertyOrFailBuild(String key) {
