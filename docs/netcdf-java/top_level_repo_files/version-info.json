@@ -64,8 +64,20 @@
     },
     {
       "version" : "5.4.1",
-      "include" : "1",
+      "include" : "0",
       "releaseDate": "2020-12-07",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.4/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.4.2",
+      "include" : "1",
+      "releaseDate": "2021-08-27",
       "status" : "current",
       "docsets": {
         "userguide": {
