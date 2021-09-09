@@ -315,9 +315,7 @@ public class HtmlWriter {
       sb.append("<br>\n");
     }
 
-    sb.append( this.tdsContext.getWebappName() )
-            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
-    sb.append( "] <a href='" )
+    sb.append( "<a href='" )
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
@@ -326,9 +324,7 @@ public class HtmlWriter {
   private void appendWebappFooter( StringBuilder sb )
   {
     sb.append( "<h3>" )
-            .append( this.tdsContext.getWebappName() )
-            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
-    sb.append( "] <a href='" )
+            .append( "<a href='" )
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );

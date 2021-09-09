@@ -198,8 +198,6 @@ libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
 libraries["joda-time"] = "joda-time:joda-time:2.8.1"
 
-libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
-
 libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.0"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.3.2"

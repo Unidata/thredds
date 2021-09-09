@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and test with Gradle (${{ matrix.java-vendor }} ${{ matrix.java-version }})
-        uses: Unidata/thredds-test-action@v1
+        uses: Unidata/thredds-test-action@v2
         with:
           java-vendor: ${{ matrix.java-vendor }}
           java-version: ${{ matrix.java-version }}
