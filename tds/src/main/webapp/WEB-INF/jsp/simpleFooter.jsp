@@ -32,5 +32,4 @@ ${webappName}
   </a>
 </c:if>
 
-[Version ${webappVersion} - ${webappVersionBuildDate}]
 <a href="${webappDocsPath}">Documentation</a>

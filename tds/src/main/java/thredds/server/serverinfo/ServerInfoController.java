@@ -79,9 +79,7 @@ public class ServerInfoController
 	    Map<String,Object> model = new HashMap<>();
 	    model.put( "serverInfo", this.tdsContext.getServerInfo() );
 	    model.put( "webappName", this.tdsContext.getWebappName() );
-	    model.put( "webappVersion", this.tdsContext.getWebappVersion() );
-	    model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );	  
-	    
+
 	    return model;
   }
 }

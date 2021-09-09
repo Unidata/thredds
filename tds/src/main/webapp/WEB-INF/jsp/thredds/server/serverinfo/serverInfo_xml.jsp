@@ -5,12 +5,6 @@
     <name><c:out value="${serverInfo.name}"/></name>
     <!--logoUrl><c:out value="${serverInfo.logoUrl}"/></logoUrl-->
     <!--logoAltText><c:out value="${serverInfo.logoAltText}"/></logoAltText-->
-    <webapp>
-        <name><c:out value="${webappName}"/></name>
-        <version><c:out value="${webappVersion}"/></version>
-        <versionBuildDate><c:out value="${webappVersionBuildDate}"/></versionBuildDate>
-    </webapp>
-
     <abstract><c:out value="${serverInfo.summary}"/></abstract>
     <keywords><c:out value="${serverInfo.keywords}"/></keywords>
 

@@ -14,8 +14,6 @@
         <c:out value="${serverInfo.name}"/>
     </li>
     <li>Webapp Name: <c:out value="${webappName}"/></li>
-    <li>Webapp Version: <c:out value="${webappVersion}"/></li>
-    <li>Webapp Version Build Date: <c:out value="${webappVersionBuildDate}"/></li>
     <li>Abstract: <c:out value="${serverInfo.summary}"/></li>
     <li>Keyphrases: <c:out value="${serverInfo.keywords}"/></li>
     <li>Contact:

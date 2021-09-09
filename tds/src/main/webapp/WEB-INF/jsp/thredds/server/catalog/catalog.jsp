@@ -15,8 +15,6 @@
   String catUri = (String) request.getAttribute( "catUri");
   // isLocalCatalog
   String webappName = (String) request.getAttribute( "webappName");
-  String webappVersion = (String) request.getAttribute( "webappVersion");
-  String webappBuildDate = (String) request.getAttribute( "webappBuildDate");
   String webappDocsPath = (String) request.getAttribute( "webappDocsPath");
 %>
 <head>
@@ -107,7 +105,6 @@
   </table>
   <hr size="1" noshade="noshade">
   <h3>
-    ${webappName} [Version ${webappVersion}]
     <a href="${docsPath}">Documentation</a>
   </h3>
 </body>
