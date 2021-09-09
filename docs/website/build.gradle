@@ -7,14 +7,14 @@ tasks.create('publishNcjVersionedUserGuide', PublishToRawRepoTask) {
   description = 'Publish netCDF-java user guide (versioned) to Nexus under /major.minor/.'
   repoName = 'docs-netcdf-java'
   publishSrc = "${projectDir}/netcdf-java/"
-  destPath = 'netcdf-java/4.6/userguide/'
+  destPath = '4.6/userguide/'
 }
 
 tasks.create('publishNcjVersionedJavadoc', PublishToRawRepoTask) {
   description = 'Publish netCDF-java javadoc (versioned) to Nexus under /major.minor/.'
   repoName = 'docs-netcdf-java'
   publishSrc = "${rootDir}/cdm/build/docs/javadoc/"
-  destPath = 'netcdf-java/4.6/javadoc/'
+  destPath = '4.6/javadoc/'
   dependsOn ':cdm:javadoc'
 }
 
@@ -22,7 +22,7 @@ tasks.create('publishNcjVersionedJavadocAll', PublishToRawRepoTask) {
   description = 'Publish netCDF-java javadoc (versioned) to Nexus under /major.minor/.'
   repoName = 'docs-netcdf-java'
   publishSrc = "${rootDir}/ui/build/docs/javadoc/"
-  destPath = 'netcdf-java/4.6/javadocAll/'
+  destPath = '4.6/javadocAll/'
   dependsOn ':ui:javadoc'
 }
 
@@ -30,14 +30,14 @@ tasks.create('publishTdsVersionedDocs', PublishToRawRepoTask) {
   description = 'Publish TDS docs (versioned) to Nexus under /major.minor/.'
   repoName = 'docs-tds'
   publishSrc = "${projectDir}/tds/"
-  destPath = 'tds/4.6/adminguide/'
+  destPath = '4.6/adminguide/'
 }
 
 tasks.create('publishTdsCurrentDocs', PublishToRawRepoTask) {
   description = 'Publish TDS docs to Nexus under /current/.'
   repoName = 'docs-tds'
   publishSrc = "${projectDir}/tds/"
-  destPath = 'tds/current/adminguide/'
+  destPath = 'current/adminguide/'
 }
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
@@ -45,25 +45,25 @@ tasks.create('publishTdsCurrentDocs', PublishToRawRepoTask) {
 tasks.create('deleteNcjVersionedDocsFromNexus', DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
   searchQueryParameters.repository = 'docs-netcdf-java'
-  searchQueryParameters.group = "/netcdf-java/4.6/userguide*"
+  searchQueryParameters.group = "/4.6/userguide*"
 }
 
 tasks.create('deleteNcjVersionedJavaDocsFromNexus', DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
   searchQueryParameters.repository = 'docs-netcdf-java'
-  searchQueryParameters.group = "/netcdf-java/4.6/javadoc*"
+  searchQueryParameters.group = "/4.6/javadoc*"
 }
 
 tasks.create('deleteTdsVersionedDocsFromNexus', DeleteFromNexusTask) {
   description = 'Remove TDS docs on Nexus under /major.minor/.'
   searchQueryParameters.repository = 'docs-tds'
-  searchQueryParameters.group = "/tds/4.6/*"
+  searchQueryParameters.group = "/4.6/*"
 }
 
 tasks.create('deleteTdsCurrentDocsFromNexus', DeleteFromNexusTask) {
   description = 'Remove TDS docs on Nexus under /current/.'
   searchQueryParameters.repository = 'docs-tds'
-  searchQueryParameters.group = "/tds/current/*"
+  searchQueryParameters.group = "/current/*"
 }
 
 tasks.create('publishAllDocs') {
