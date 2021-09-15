@@ -4,13 +4,21 @@ plugins {
 
 import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 
+def updateAllFiles = tasks.register('updateAll') {
+  group 'publishing'
+}
+
 def updateReleaseInfo = tasks.register("updateLatestTdsReleaseInfo", PublishToRawRepoTask) {
   description "Publish latest.xml to Nexus directly under tds/startup of the downloads-tds repository."
   group 'publishing'
   host = 'https://artifacts.unidata.ucar.edu/'
   repoName = "downloads-tds"
   publishSrc = file("${projectDir}/tds/top_level_repo_files/")
-  destPath = 'tds/startup/'
+  destPath = 'startup/'
+}
+
+updateAllFiles.configure {
+  dependsOn updateReleaseInfo
 }
 
 String getPropertyOrFailBuild(String key) {

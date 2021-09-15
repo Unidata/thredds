@@ -20,7 +20,7 @@ docs.forEach { name ->
     host = 'https://artifacts.unidata.ucar.edu/'
     repoName = "docs-${name}"
     publishSrc = file("${projectDir}/${name}/top_level_repo_files/")
-    destPath = "${name}/"
+    destPath = name == 'ncml' ? "${name}/" : "/"
   }
 
   def updateCommon = tasks.register("update${taskName}CommonFiles", PublishToRawRepoTask) {
@@ -29,7 +29,7 @@ docs.forEach { name ->
     host = 'https://artifacts.unidata.ucar.edu/'
     repoName = "docs-${name}"
     publishSrc = file("${projectDir}/common/")
-    destPath = "${name}/"
+    destPath = name == 'ncml' ? "${name}/" : "/"
   }
 
   updateAllFiles.configure {
