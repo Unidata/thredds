@@ -85,9 +85,9 @@ public class WmsDetailedConfig
         try
         {
             // Parse the document, with validation
-            XMLEntityResolver.initEntity("http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd",
+            XMLEntityResolver.initEntity("https://schemas.unidata.ucar.edu/thredds/dtd/ncwms/wmsConfig.dtd",
                     "/resources/thredds/schemas/wmsConfig.dtd",
-                    "http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd");
+                    "https://schemas.unidata.ucar.edu/thredds/dtd/ncwms/wmsConfig.dtd");
             Document doc = new XMLEntityResolver(true).getSAXBuilder().build(in);
             in.close();
 

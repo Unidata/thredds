@@ -3,7 +3,7 @@
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd" 
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  https://schemas.unidata.ucar.edu/thredds/InvCatalog.1.0.xsd"
     >
  
     <documentation type="summary"> The SAGE III Ozone Loss and Validation Experiment (SOLVE) was a measurement campaign designed to examine the     processes controlling ozone levels at mid- to high latitudes. Measurements were made in the Arctic high-latitude region in winter using the NASA     DC-8 and ER-2 aircraft, as well as balloon platforms and ground-based instruments. The mission also acquired correlative data needed to     validate the Stratospheric Aerosol and Gas Experiment (SAGE) III satellite measurements that will be used to quantitatively assess high-latitude     ozone loss. SOLVE is co-sponsored by the Upper Atmosphere Research Program (UARP), Atmospheric Effects of Aviation Project (AEAP),     Atmospheric Chemistry Modeling and Analysis Program (ACMAP), and Earth Observing System (EOS) of NASA's Earth Science Enterprise     (ESE) as part of the validation program for the SAGE III instrument. 

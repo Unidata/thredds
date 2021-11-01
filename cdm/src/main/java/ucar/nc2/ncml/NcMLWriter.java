@@ -147,10 +147,10 @@ public class NcMLWriter {
 
     if (ncfile instanceof NetcdfDataset)
       rootElem.setAttribute("schemaLocation",
-        "http://www.ucar.edu/schemas/netcdf-2.2 http://www.unidata.ucar.edu/schemas/netcdfCS-2.2.xsd", xsiNS);
+        "http://www.unindata.ucar.edu/namespaces/netcdf-2.2 https://schemas.unidata.ucar.edu/netcdfCS-2.2.xsd", xsiNS);
     else
       rootElem.setAttribute("schemaLocation",
-        "http://www.ucar.edu/schemas/netcdf-2.2 http://www.unidata.ucar.edu/schemas/netcdf-2.2.xsd", xsiNS);
+        "http://www.unidata.ucar.edu/namespaces/netcdf-2.2 https://schemas.unidata.ucar.edu/netcdf-2.2.xsd", xsiNS);
     */
 
     if (null == location)
