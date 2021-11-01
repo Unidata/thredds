@@ -46,7 +46,7 @@ import java.util.*;
 
 public class DCWriter {
   private static final Namespace defNS = Namespace.getNamespace("http://purl.org/dc/elements/1.1/");
-  private static final String schemaLocation = defNS.getURI() + " http://www.unidata.ucar.edu/schemas/other/dc/dc.xsd";
+  private static final String schemaLocation = defNS.getURI() + " https://schemas.unidata.ucar.edu/other/dc/dc.xsd";
   private static final String threddsServerURL = "http://localhost:8080/thredds/subset.html";
 
   private InvCatalog cat;

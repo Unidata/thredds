@@ -57,7 +57,7 @@ import ucar.unidata.util.Parameter;
  */
 
 public class NcMLGWriter {
-  protected static final String schemaLocation = "http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd";
+  protected static final String schemaLocation = "https://schemas.unidata.ucar.edu/netcdf/netcdf-cs.xsd";
 
   /**
    * Write a NetcdfDataset as an NcML-G document to the specified stream.

@@ -3,10 +3,10 @@
   xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
   xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 https://schemas.unidata.ucar.edu/thredds/InvCatalog.1.0.xsd"
 >
 <!--?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/CatalogGenConfig.0.5.dtd"-->
+<!DOCTYPE catalog SYSTEM "https://schemas.unidata.ucar.edu/thredds/CatalogGenConfig.0.5.dtd"-->
   <dataset name="CatGen Test for Bad Access Points">
       <metadata inherited="true">
           <serviceName>testServer</serviceName>
