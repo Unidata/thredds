@@ -2,9 +2,9 @@ allprojects {
     // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
     group = "edu.ucar"
     // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
-    version = '4.6.18'
+    version = '4.6.19-SNAPSHOT'
     // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
-    status = 'release'
+    status = 'development'
 }
 
 // Matches Maven's "project.description".
