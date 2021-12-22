@@ -38,8 +38,15 @@ import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 import org.jdom2.xpath.XPath;
 
+import org.jdom2.xpath.XPathFactory;
 import thredds.catalog.XMLEntityResolver;
 import thredds.server.wms.ThreddsLayer;
 import ucar.nc2.units.SimpleUnit;
@@ -84,16 +91,16 @@ public class WmsDetailedConfig
 
         try
         {
-            // Parse the document, with validation
-            XMLEntityResolver.initEntity("https://schemas.unidata.ucar.edu/thredds/dtd/ncwms/wmsConfig.dtd",
-                    "/resources/thredds/schemas/wmsConfig.dtd",
-                    "https://schemas.unidata.ucar.edu/thredds/dtd/ncwms/wmsConfig.dtd");
-            Document doc = new XMLEntityResolver(true).getSAXBuilder().build(in);
-            in.close();
+            SAXBuilder builder = new SAXBuilder();
+            builder.setXMLReaderFactory(XMLReaders.NONVALIDATING);
+            builder.setExpandEntities(false);
+            Document doc = builder.build(in);
 
             // Load the global default settings
-            Element defaultSettingsEl =
-                (Element)XPath.selectSingleNode(doc, "/wmsConfig/global/defaults");
+            XPathExpression<Element> defaultSettingsExpression = XPathFactory.instance().compile("/wmsConfig/global/defaults",
+                Filters.element(), null, Namespace.NO_NAMESPACE);
+            Element defaultSettingsEl = defaultSettingsExpression.evaluateFirst(doc);
+
             // We don't have to check for a null return value since we validated
             // the document against the DTD upon reading.  Similarly we know that
             // all the default settings are non-null: null values would have caused
@@ -101,30 +108,27 @@ public class WmsDetailedConfig
             wmsConfig.defaultSettings = new LayerSettings(defaultSettingsEl);
 
             // Load the overrides for specific standard names
-            @SuppressWarnings("unchecked")
-            List<Element> standardNamesList =
-                (List<Element>)XPath.selectNodes(doc, "/wmsConfig/global/standardNames/standardName");
-            for (Element standardNameEl : standardNamesList)
-            {
+            XPathExpression<Element> standardNamesExpression = XPathFactory.instance()
+                .compile("/wmsConfig/global/standardNames/standardName", Filters.element(), null, Namespace.NO_NAMESPACE);
+            List<Element> standardNamesList = standardNamesExpression.evaluate(doc);
+
+            for (Element standardNameEl : standardNamesList) {
                 StandardNameSettings sns = new StandardNameSettings(standardNameEl);
                 wmsConfig.standardNames.put(sns.getStandardName(), sns);
             }
 
             // Load the overrides for specific dataset paths
-            @SuppressWarnings("unchecked")
-            List<Element> datasetPathsList =
-                (List<Element>)XPath.selectNodes(doc, "/wmsConfig/overrides/datasetPath");
-            for (Element datasetPathEl : datasetPathsList)
-            {
+            XPathExpression<Element> datasetPathsExpression = XPathFactory.instance()
+                .compile("/wmsConfig/overrides/datasetPath", Filters.element(), null, Namespace.NO_NAMESPACE);
+            List<Element> datasetPathsList = datasetPathsExpression.evaluate(doc);
+
+            for (Element datasetPathEl : datasetPathsList) {
                 DatasetPathSettings pathSettings = new DatasetPathSettings(datasetPathEl);
                 wmsConfig.datasetPaths.put(pathSettings.getPathSpec(), pathSettings);
             }
+        } catch (IOException | JDOMException e) {
+            throw new WmsConfigException(e);
         }
-        catch(JDOMException jdome)
-        {
-            throw new WmsConfigException(jdome);
-        }
-
         return wmsConfig;
     }
 
