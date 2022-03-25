@@ -264,7 +264,7 @@ libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.946"
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
 libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.10.5"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.10.5"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.10.5.1"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.13.2"
 
 libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
     // This is an external TDS plugin that depends on an old
