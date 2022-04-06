@@ -63,4 +63,12 @@
     <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-validator@.*$</packageUrl>
     <cve>CVE-2019-10219</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-beans-4.3.29.RELEASE.jar
+      reason: only vulnerable for JDK 9+
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-beans@.*$</packageUrl>
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>
