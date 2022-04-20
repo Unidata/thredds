@@ -71,4 +71,12 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework/spring-beans@.*$</packageUrl>
     <cve>CVE-2022-22965</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-core-4.3.29.RELEASE.jar
+      reason: this CVE does not point to a vulnerability in the project itself, it is a vulnerability that occurs with improper use of HTTPInvoker (which we do not use)
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-core@.*$</packageUrl>
+    <cve>CVE-2016-1000027</cve>
+  </suppress>
 </suppressions>
