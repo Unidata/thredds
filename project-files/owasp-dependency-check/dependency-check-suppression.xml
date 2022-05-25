@@ -58,10 +58,12 @@
   <suppress>
     <notes><![CDATA[
       file name: hibernate-validator-4.3.2.Final.jar
-      reason: we do not use the SafeHtml validator in this project.
+      reason: (CVE-2019-10219) we do not use the SafeHtml validator in this project.
+      (CVE-2017-7536) vulnerability not introduced until 5.2.x
      ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-validator@.*$</packageUrl>
     <cve>CVE-2019-10219</cve>
+    <cve>CVE-2017-7536</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -73,7 +75,7 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-      file name: spring-core-4.3.29.RELEASE.jar
+      file name: spring-core-4.3.30.RELEASE.jar
       reason: (CVE-2016-1000027) this CVE does not point to a vulnerability in the project itself, it is a vulnerability that occurs with improper use of HTTPInvoker, which we do not use.
       (CVE-2022-22965) only vulnerable for JDK 9+.
       (CVE-2022-22968) case sensitivity vulnerability in DataBinder disallowedFields, which we do not use
@@ -82,5 +84,37 @@
     <cve>CVE-2016-1000027</cve>
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-22968</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-context-4.3.30.RELEASE.jar
+      reason: case sensitivity vulnerability in DataBinder disallowedFields, which we do not use
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-context@.*$</packageUrl>
+    <cve>CVE-2022-22968</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-expression-4.3.30.RELEASE.jar
+      reason: we do not use SpEL
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-expression@.*$</packageUrl>
+    <cve>CVE-2022-22950</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-web-4.3.30.RELEASE.jar
+      reason: resolved CVE - only valid if using HTTPInvokerServiceExporter
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-web@.*$</packageUrl>
+    <cve>CVE-2016-1000027</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-webmvc-4.3.30.RELEASE.jar
+      reason: (CVE-2020-5397) vulnerability introduce in 5.2.x
+     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webmvc@.*$</packageUrl>
+    <cve>CVE-2020-5397</cve>
   </suppress>
 </suppressions>

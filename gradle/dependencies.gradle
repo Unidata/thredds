@@ -87,7 +87,7 @@ libraries["unidata-nexus"] = "edu.ucar.unidata:unidata-nexus-gradle:0.0.1"
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.29.RELEASE"
+versions["spring"] = "4.3.30.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -260,11 +260,11 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
     exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
 }
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.946"
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.12.227"
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.13.2"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.13.2"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.13.2.1"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.13.3"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.13.3"
 
 libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
     // This is an external TDS plugin that depends on an old
