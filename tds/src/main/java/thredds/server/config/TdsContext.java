@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.util.Log4jWebConfigurer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -240,7 +239,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     logServerStartup.info("TdsContext: Shutting down collection manager");
     CollectionUpdater.INSTANCE.shutdown();
     logServerStartup.info("TdsContext: shutdownLogging()");
-    Log4jWebConfigurer.shutdownLogging(servletContext);
   }
 
 
