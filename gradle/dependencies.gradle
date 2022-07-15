@@ -239,9 +239,11 @@ libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
-libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
+libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
 
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.1.3.Final"
+
+libraries["jaxb-api"] = "javax.xml.bind:jaxb-api:2.3.1"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 

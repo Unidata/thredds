@@ -81,4 +81,12 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework/spring-web@.*$</packageUrl>
     <cve>CVE-2016-1000027</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[(
+      file name: hibernate-validator-5.1.3.Final.jar
+      reason: we do not use EL expressions in this project.
+      ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate-validator@.*$</packageUrl>
+    <cve>CVE-2020-10693</cve>
+  </suppress>
 </suppressions>
