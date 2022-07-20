@@ -8,12 +8,12 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
         mavenCentral()  // JCenter isn't quite a superset of Maven Central.
-        
+
         // All of the repositories below could be replaced with:
         //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
         // which is a group repository that contains all other repositories. However, I prefer to list all source
         // repos explicitly so that we know where all artifacts ultimately come from.
-        
+
         // Hosted release repositories.
         maven {
             // For "threddsIso", "ncwms", "visad" and "jj2000".
@@ -27,7 +27,7 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             // However, we do need this to get the gretty plugin now that bintray and jcenter are going away.
             url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
         }
-    
+
         // Hosted proxy repositories. In the event that the remote repos go away, we still have copies of the artifacts.
         maven {
             // For geotoolkit JARs, which are needed by "ncwms". Repositories are not inherited from a dependency,
@@ -87,7 +87,7 @@ libraries["unidata-nexus"] = "edu.ucar.unidata:unidata-nexus-gradle:0.0.1"
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "5.3.20"
+versions["spring"] = "4.3.30.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -101,7 +101,7 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 
 ////////////////////////////////////////// Spring security //////////////////////////////////////////
 
-versions["spring-security"] = "5.6.5"
+versions["spring-security"] = "3.2.5.RELEASE"
 
 libraries["spring-security-config"] = "org.springframework.security:spring-security-config:${versions["spring-security"]}"
 
@@ -239,18 +239,16 @@ libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
-libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
+libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
 
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.1.3.Final"
-
-libraries["jaxb-api"] = "javax.xml.bind:jaxb-api:2.3.1"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.20-SNAPSHOT"
 
-libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
-    // exclude jackson deps so that they can be overridden 
+libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.12.263") {
+    // exclude jackson deps so that they can be overridden
     // with 2.7.x deps to address security issue. See
     // https://github.com/aws/aws-sdk-java/issues/1159
     // as of the time these were added, the versions of these were:
@@ -262,7 +260,7 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
     exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
 }
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.12.227"
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.12.263"
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
 libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.13.3"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
